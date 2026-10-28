@@ -1,0 +1,10 @@
+{
+ "dataset": "food101",
+ "setting": "B64_K2-10",
+ "zero_shot": 86.1,
+ "stata": 88.6,
+ "graft": 90.1,
+ "graft_std": 0.3,
+ "stata_std": 0.3,
+ "placeholder": true
+}

@@ -1,0 +1,10 @@
+{
+ "dataset": "stanford_cars",
+ "setting": "B64_K2-10",
+ "zero_shot": 65.3,
+ "stata": 68.9,
+ "graft": 71.2,
+ "graft_std": 0.4,
+ "stata_std": 0.3,
+ "placeholder": true
+}

@@ -1,0 +1,10 @@
+{
+ "dataset": "oxford_flowers",
+ "setting": "B64_K2-10",
+ "zero_shot": 71.3,
+ "stata": 75.2,
+ "graft": 76.7,
+ "graft_std": 0.2,
+ "stata_std": 0.5,
+ "placeholder": true
+}

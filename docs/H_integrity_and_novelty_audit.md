@@ -58,6 +58,12 @@ synthetic field; determinism; sampler protocol properties; metrics; adapter shap
 * Runtime figures.
 * The claim that the method is backbone-agnostic.
 
+## Placeholder data in figures
+`plot_keff.pdf`, `plot_sensitivity.pdf`, `plot_smoothness.pdf` and `plot_qualitative.pdf` are drawn from
+`results/placeholder/` and carry a red PLACEHOLDER watermark; `plot_embedding_synthetic.pdf` is real solver output
+on the synthetic unit-test generator and is labelled synthetic in its caption. The Results and Ablation text
+describes the placeholder numbers and must be rewritten to the measured ones.
+
 ## Experiments essential before submission (in order)
 E1 (smoothness), E2 (main table with official baselines through the StatA/MOON harness), E6/E7 (controls including
 random graph), E3 (online), E5 (calibration), E4 (backbones), E8 (cost).

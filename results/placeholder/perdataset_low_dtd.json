@@ -1,0 +1,10 @@
+{
+ "dataset": "dtd",
+ "setting": "B64_K2-10",
+ "zero_shot": 44.4,
+ "stata": 50.0,
+ "graft": 52.3,
+ "graft_std": 0.3,
+ "stata_std": 0.2,
+ "placeholder": true
+}

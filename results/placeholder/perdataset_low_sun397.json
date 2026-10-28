@@ -1,0 +1,10 @@
+{
+ "dataset": "sun397",
+ "setting": "B64_K2-10",
+ "zero_shot": 62.6,
+ "stata": 65.0,
+ "graft": 66.9,
+ "graft_std": 0.3,
+ "stata_std": 0.4,
+ "placeholder": true
+}

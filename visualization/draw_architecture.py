@@ -1,207 +1,187 @@
-"""Publication figures drawn from the method specification (vector PDF).  No experimental data is used.
+"""Publication-style method figures drawn from the method specification (vector PDF, Okabe-Ito palette,
+orthogonal connectors, consistent 7 pt sans-serif labels).  No experimental data is used.
   Fig. 1 overall framework      -> paper/figures/fig1_framework.pdf      (double column)
   Fig. 2 pooling module detail  -> paper/figures/fig2_module.pdf         (single column)
   Fig. 3 conceptual comparison  -> paper/figures/fig3_concept.pdf        (single column, conceptual)
 Run: python visualization/draw_architecture.py
 """
-import os, math
+import os, sys
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Circle, Polygon
-import matplotlib.patheffects as pe
-
-OUT = [os.path.join(os.path.dirname(__file__), "..", "paper", "figures"),
-       os.path.join(os.path.dirname(__file__), "..", "figures", "architecture")]
+from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pubstyle import apply, OKABE_ITO, SINGLE, DOUBLE
+apply()
+OUT = [os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "paper", "figures"),
+       os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "figures", "architecture")]
 for o in OUT:
     os.makedirs(o, exist_ok=True)
 
-plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 7.5, "pdf.fonttype": 42, "ps.fonttype": 42})
-C_FROZEN = "#d9dde3"     # frozen / inherited components
-C_FROZEN_E = "#5f6b7a"
-C_NEW = "#ffd59e"        # novel components
-C_NEW_E = "#c2610a"
-C_DATA = "#dbeafe"
-C_DATA_E = "#1d4ed8"
-C_PRIOR = "#e9d5ff"
-C_PRIOR_E = "#6d28d9"
-C_TRAIN = "#9ca3af"
+# role colours (fill, edge)
+DATA = ("#eef3fb", "#0072B2")        # blue
+FROZEN = ("#f1f1f1", "#6b6b6b")      # grey
+NEW = ("#fdebd3", "#D55E00")         # vermillion / orange
+PRIOR = ("#f3e5f5", "#CC79A7")       # purple
+INK = "#222222"
 
 
-def box(ax, x, y, w, h, text, fc, ec, lw=1.0, fs=7.2, bold=False, rounding=0.04, style="round"):
-    p = FancyBboxPatch((x, y), w, h, boxstyle=f"{style},pad=0.004,rounding_size={rounding}", fc=fc, ec=ec, lw=lw)
-    ax.add_patch(p)
-    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=fs, weight="bold" if bold else "normal",
-            linespacing=1.15)
-    return p
+def box(ax, x, y, w, h, text, role, fs=6.6, bold=False, lw=0.9):
+    fc, ec = role
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.002,rounding_size=0.012", fc=fc, ec=ec, lw=lw))
+    ax.text(x + w / 2, y + h / 2, text, ha="center", va="center", fontsize=fs, color=INK, weight="bold" if bold else "normal", linespacing=1.2)
+    return (x, y, w, h)
 
 
-def arrow(ax, p0, p1, color="#374151", lw=1.0, ls="-", shrink=1.5, rad=0.0, text=None, tpos=0.5, toff=(0, 0.02), fs=6.5):
-    a = FancyArrowPatch(p0, p1, arrowstyle="-|>", mutation_scale=8, color=color, lw=lw, linestyle=ls,
-                        shrinkA=shrink, shrinkB=shrink, connectionstyle=f"arc3,rad={rad}")
+def edge(ax, p0, p1, color=INK, lw=0.7, text=None, tpos=(0, 0.015), fs=6, rad=0.0, ls="-"):
+    a = FancyArrowPatch(p0, p1, arrowstyle="-|>", mutation_scale=7, color=color, lw=lw, shrinkA=1, shrinkB=1,
+                        connectionstyle=f"arc3,rad={rad}", linestyle=ls)
     ax.add_patch(a)
     if text:
-        x = p0[0] + tpos * (p1[0] - p0[0]) + toff[0]; y = p0[1] + tpos * (p1[1] - p0[1]) + toff[1]
-        ax.text(x, y, text, ha="center", va="bottom", fontsize=fs, color=color)
+        ax.text((p0[0] + p1[0]) / 2 + tpos[0], (p0[1] + p1[1]) / 2 + tpos[1], text, ha="center", va="bottom", fontsize=fs, color=color)
+
+
+def elbow(ax, p0, p1, color=INK, lw=0.7, text=None, fs=6, via="h"):
+    """Orthogonal connector: horizontal then vertical (via='h') or vertical then horizontal (via='v')."""
+    mid = (p1[0], p0[1]) if via == "h" else (p0[0], p1[1])
+    ax.plot([p0[0], mid[0]], [p0[1], mid[1]], color=color, lw=lw, solid_capstyle="round")
+    a = FancyArrowPatch(mid, p1, arrowstyle="-|>", mutation_scale=7, color=color, lw=lw, shrinkA=0, shrinkB=1)
+    ax.add_patch(a)
+    if text:
+        ax.text(mid[0], mid[1] + 0.015, text, ha="center", va="bottom", fontsize=fs, color=color)
+
+
+def right(b): return (b[0] + b[2], b[1] + b[3] / 2)
+def left(b): return (b[0], b[1] + b[3] / 2)
+def top(b): return (b[0] + b[2] / 2, b[1] + b[3])
+def bottom(b): return (b[0] + b[2] / 2, b[1])
 
 
 def save(fig, name):
     for o in OUT:
-        fig.savefig(os.path.join(o, name), bbox_inches="tight", pad_inches=0.01)
+        fig.savefig(os.path.join(o, name))
     plt.close(fig)
 
 
-# ------------------------------------------------------------------------------------------------
-# Figure 1: overall framework
-# ------------------------------------------------------------------------------------------------
 def fig1():
-    fig, ax = plt.subplots(figsize=(7.1, 3.2))
+    fig, ax = plt.subplots(figsize=(DOUBLE, 3.1))
     ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
-    FS = 6.3
-    # column A: inputs
-    box(ax, 0.005, 0.60, 0.11, 0.27, "unlabeled test\nbatch or stream\n$\\{x_i\\}_{i=1}^{N}$", C_DATA, C_DATA_E, fs=5.9)
-    box(ax, 0.005, 0.17, 0.11, 0.27, "class names\n$\\{c_k\\}_{k=1}^{K}$\n(full vocabulary)", C_DATA, C_DATA_E, fs=5.9)
-    # column B: frozen encoders
-    box(ax, 0.13, 0.63, 0.105, 0.21, "frozen image\nencoder $f_v$", C_FROZEN, C_FROZEN_E, fs=FS)
-    box(ax, 0.13, 0.20, 0.105, 0.21, "frozen text\nencoder $f_t$\n(prompt ensemble)", C_FROZEN, C_FROZEN_E, fs=5.9)
-    arrow(ax, (0.11, 0.735), (0.13, 0.735)); arrow(ax, (0.11, 0.305), (0.13, 0.305))
-    # column C: features
-    box(ax, 0.255, 0.65, 0.085, 0.17, "$X\\in\\mathbb{R}^{N\\times d}$\nunit norm", "white", C_DATA_E, fs=FS)
-    box(ax, 0.255, 0.22, 0.085, 0.17, "anchors\n$T\\in\\mathbb{R}^{K\\times d}$", "white", C_DATA_E, fs=FS)
-    arrow(ax, (0.235, 0.735), (0.255, 0.735)); arrow(ax, (0.235, 0.305), (0.255, 0.305))
-    # column D: derived quantities
-    box(ax, 0.365, 0.74, 0.155, 0.16, "zero-shot prior\n$\\hat{y}=\\mathrm{softmax}(\\tau XT^{\\!\\top})$", C_FROZEN, C_FROZEN_E, fs=5.8)
-    box(ax, 0.365, 0.49, 0.155, 0.15, "sample kNN graph $W_s$\n(inherited)", C_FROZEN, C_FROZEN_E, fs=5.8)
-    box(ax, 0.365, 0.17, 0.155, 0.19, "semantic class graph\n$L_T$ from $TT^{\\!\\top}$\n(normalised Laplacian)", C_NEW, C_NEW_E, fs=5.8)
-    arrow(ax, (0.34, 0.77), (0.365, 0.82)); arrow(ax, (0.34, 0.70), (0.365, 0.565))
-    arrow(ax, (0.34, 0.305), (0.365, 0.265)); arrow(ax, (0.34, 0.36), (0.365, 0.78), color="#9ca3af", lw=0.7)
+    H, Y1, Y2 = 0.17, 0.70, 0.20
+    i1 = box(ax, 0.005, Y1, 0.10, H, "Unlabeled test\nbatch or stream\n$\\{x_i\\}_{i=1}^{N}$", DATA, fs=5.9)
+    i2 = box(ax, 0.005, Y2, 0.10, H, "Class names\n$\\{c_k\\}_{k=1}^{K}$\n(full vocabulary)", DATA, fs=5.9)
+    e1 = box(ax, 0.125, Y1, 0.10, H, "Frozen image\nencoder $f_v$", FROZEN)
+    e2 = box(ax, 0.125, Y2, 0.10, H, "Frozen text\nencoder $f_t$\n(prompt ensemble)", FROZEN, fs=5.7)
+    f1 = box(ax, 0.245, Y1, 0.09, H, "Features\n$X\\in\\mathbb{R}^{N\\times d}$", ("white", DATA[1]))
+    f2 = box(ax, 0.245, Y2, 0.09, H, "Anchors\n$T\\in\\mathbb{R}^{K\\times d}$", ("white", DATA[1]))
+    for a_, b_ in [(i1, e1), (i2, e2), (e1, f1), (e2, f2)]:
+        edge(ax, right(a_), left(b_))
+    d1 = box(ax, 0.36, 0.74, 0.155, 0.15, "Zero-shot prior\n$\\hat{y}=\\mathrm{softmax}(\\tau XT^{\\!\\top})$", FROZEN, fs=5.8)
+    d2 = box(ax, 0.36, 0.50, 0.155, 0.14, "Sample kNN graph\n$W_s$ (inherited)", FROZEN, fs=6.1)
+    d3 = box(ax, 0.36, 0.16, 0.155, 0.18, "Semantic class graph\n$L_T$ from $TT^{\\!\\top}$\n(normalised Laplacian)", NEW, fs=5.8)
+    edge(ax, right(f1), left(d1)); elbow(ax, right(f1), left(d2), via="h")
+    edge(ax, right(f2), left(d3)); elbow(ax, (f2[0] + f2[2] * 0.7, top(f2)[1]), (d1[0] + 0.025, d1[1]), color="#9a9a9a", via="v")
     # GRAFT block
-    gx, gy, gw, gh = 0.555, 0.11, 0.32, 0.86
-    ax.add_patch(FancyBboxPatch((gx, gy), gw, gh, boxstyle="round,pad=0.004,rounding_size=0.02", fc="#fff8ee", ec=C_NEW_E, lw=1.2, ls="--"))
-    ax.text(gx + 0.01, gy + gh - 0.012, "GRAFT inference (closed form, no gradients, $\\times 10$ iterations)", ha="left", va="top", fontsize=5.7, weight="bold", color=C_NEW_E)
-    ex, ew = gx + 0.012, 0.135
-    mx, mw = gx + 0.172, 0.135
-    box(ax, ex, 0.52, ew, 0.26, "E-step\n$z_{ik}\\propto\\pi_k\\hat{y}_{ik}^{\\lambda_y}e^{\\ell_{ik}(\\mu,\\sigma)}$\n+ sample-graph term", C_FROZEN, C_FROZEN_E, fs=5.7)
-    box(ax, ex, 0.15, ew, 0.24, "sufficient statistics\n$n_k=\\sum_i z_{ik}$\n$E=\\bar{X}_z-T$\n$q=\\sum_i x_i^{2}$", "white", C_NEW_E, fs=5.8)
-    box(ax, mx, 0.67, mw, 0.13, "presence / label shift\n$\\pi_k\\propto n_k+c$", C_NEW, C_NEW_E, fs=5.8)
-    box(ax, mx, 0.41, mw, 0.21, "graph-pooled\ndisplacement field\n$D=(N_z+sQ)^{-1}N_zE$", C_NEW, C_NEW_E, fs=5.9, bold=True)
-    box(ax, mx, 0.17, mw, 0.13, "shared covariance\n$\\sigma^2_j$ (inherited)", C_FROZEN, C_FROZEN_E, fs=5.8)
-    ax.text(mx + mw / 2, 0.87, "prior $Q=\\alpha I+\\lambda L_T$", ha="center", va="center", fontsize=5.6, color=C_PRIOR_E,
-            bbox=dict(boxstyle="round,pad=0.2", fc=C_PRIOR, ec=C_PRIOR_E, lw=0.8))
-    arrow(ax, (mx + mw / 2, 0.84), (mx + mw / 2, 0.80), color=C_PRIOR_E)
-    arrow(ax, (ex + 0.03, 0.52), (ex + 0.03, 0.39), text="$z$", toff=(0.014, -0.03))
-    arrow(ax, (ex + ew, 0.36), (mx, 0.72), rad=-0.3)
-    arrow(ax, (ex + ew, 0.30), (mx, 0.48))
-    arrow(ax, (ex + ew, 0.22), (mx, 0.235))
-    arrow(ax, (mx, 0.60), (ex + ew, 0.60), color=C_NEW_E)
-    ax.text(ex + ew + 0.002, 0.47, "feedback $\\mu,\\pi,\\sigma^2$", ha="right", va="center", fontsize=4.8, color=C_NEW_E)
-    # inputs to block
-    arrow(ax, (0.52, 0.82), (ex, 0.74), text="$\\hat{y}$", tpos=0.5, toff=(0, 0.012), fs=5.8)
-    arrow(ax, (0.52, 0.565), (ex, 0.60), text="$W_s$", tpos=0.5, toff=(0, 0.012), fs=5.8)
-    arrow(ax, (0.52, 0.34), (mx, 0.47), color=C_NEW_E, rad=0.18, text="$L_T$", tpos=0.12, toff=(0, 0.02), fs=5.8)
-    arrow(ax, (0.30, 0.65), (ex, 0.27), color="#9ca3af", lw=0.7, rad=0.3, text="$X$", tpos=0.85, toff=(-0.012, 0.012), fs=5.8)
-    # outputs
-    box(ax, 0.9, 0.58, 0.095, 0.26, "adapted\nposterior $z$\n(prediction,\ncalibration)", C_DATA, C_DATA_E, fs=FS)
-    box(ax, 0.9, 0.18, 0.095, 0.26, "adapted state\n$\\mu=T+D$, $\\pi$\n(reused\nonline)", C_DATA, C_DATA_E, fs=FS)
-    arrow(ax, (gx + gw, 0.71), (0.9, 0.71)); arrow(ax, (gx + gw, 0.31), (0.9, 0.31))
-    # legend
-    for i, (c, e, t) in enumerate([(C_DATA, C_DATA_E, "data / outputs"), (C_FROZEN, C_FROZEN_E, "frozen or inherited"), (C_NEW, C_NEW_E, "novel (this work)"), (C_PRIOR, C_PRIOR_E, "prior")]):
-        ax.add_patch(FancyBboxPatch((0.01 + i * 0.165, 0.012), 0.02, 0.045, boxstyle="round,pad=0.002", fc=c, ec=e, lw=0.8))
-        ax.text(0.036 + i * 0.165, 0.035, t, va="center", fontsize=5.9)
+    gx, gy, gw, gh = 0.545, 0.06, 0.335, 0.90
+    ax.add_patch(FancyBboxPatch((gx, gy), gw, gh, boxstyle="round,pad=0.002,rounding_size=0.015", fc="#fffaf3", ec=NEW[1], lw=1.0, ls=(0, (4, 2))))
+    ax.text(gx + 0.01, gy + gh - 0.012, "GRAFT inference (closed form, no gradients)", ha="left", va="top", fontsize=6.6, weight="bold", color=NEW[1])
+    ex, ew, mx, mw = gx + 0.012, 0.135, gx + 0.182, 0.142
+    E = box(ax, ex, 0.56, ew, 0.26, "E-step\n$z_{ik}\\propto\\pi_k\\,\\hat{y}_{ik}^{\\lambda_y}\\,e^{\\ell_{ik}(\\mu,\\sigma)}$\n+ sample-graph term", FROZEN, fs=6.0)
+    St = box(ax, ex, 0.16, ew, 0.26, "Sufficient statistics\nof $(X, z)$:\n$n_k=\\sum_i z_{ik}$\n$E=\\bar{X}_z-T,\\ q$", ("white", NEW[1]), fs=6.0)
+    M1 = box(ax, mx, 0.70, mw, 0.13, "Presence (label shift)\n$\\pi_k\\propto n_k+c$", NEW, fs=5.8)
+    M2 = box(ax, mx, 0.38, mw, 0.25, "Graph-pooled\ndisplacement field\n$D=(N_z+sQ)^{-1}N_zE$\nprior $Q=\\alpha I+\\lambda L_T$", NEW, fs=6.2, bold=True, lw=1.3)
+    M3 = box(ax, mx, 0.16, mw, 0.13, "Shared covariance\n$\\sigma_j^2$ (inherited)", FROZEN, fs=6.0)
+    edge(ax, bottom(E), top(St), text="$z$", tpos=(0.012, -0.02))
+    edge(ax, (St[0] + St[2], St[1] + St[3] * 0.85), left(M1))
+    edge(ax, (St[0] + St[2], St[1] + St[3] * 0.55), (M2[0], M2[1] + M2[3] * 0.35))
+    edge(ax, (St[0] + St[2], St[1] + St[3] * 0.25), left(M3))
+    edge(ax, (M2[0], M2[1] + M2[3] * 0.8), (E[0] + E[2], E[1] + E[3] * 0.25), color=NEW[1])
+    ax.text(ex + ew - 0.002, 0.49, "$\\mu{=}T{+}D,\\ \\pi,\\ \\sigma^2$\nback to the E-step", ha="right", va="center", fontsize=5.4, color=NEW[1], linespacing=1.1)
+    edge(ax, right(d1), (E[0], E[1] + E[3] * 0.85), text="$\\hat{y}$", tpos=(0, 0.01))
+    edge(ax, right(d2), (E[0], E[1] + E[3] * 0.3), text="$W_s$", tpos=(0, 0.012))
+    # L_T: below the statistics box into the field box
+    xm = (St[0] + St[2] + M2[0]) / 2
+    ax.plot([d3[0] + d3[2] * 0.5, d3[0] + d3[2] * 0.5, xm, xm], [d3[1], 0.10, 0.10, M2[1] + 0.02], color=NEW[1], lw=0.7)
+    ax.add_patch(FancyArrowPatch((xm, M2[1] + 0.02), (M2[0], M2[1] + 0.03), arrowstyle="-|>", mutation_scale=7, color=NEW[1], lw=0.7, shrinkA=0, shrinkB=1))
+    ax.text(0.47, 0.105, "$L_T$", ha="center", va="bottom", fontsize=6, color=NEW[1])
+    o1 = box(ax, 0.895, 0.60, 0.10, 0.22, "Adapted\nposterior $z$\n(prediction)", DATA, fs=6.0)
+    o2 = box(ax, 0.895, 0.20, 0.10, 0.22, "Adapted state\n$\\mu=T+D$, $\\pi$\n(reused online)", DATA, fs=5.8)
+    edge(ax, (gx + gw, 0.71), left(o1)); edge(ax, (gx + gw, 0.31), left(o2))
+    for i, (role, t) in enumerate([(DATA, "data"), (FROZEN, "frozen or inherited"), (NEW, "this work")]):
+        ax.add_patch(FancyBboxPatch((0.01 + i * 0.16, 0.012), 0.018, 0.04, boxstyle="round,pad=0.001", fc=role[0], ec=role[1], lw=0.8))
+        ax.text(0.034 + i * 0.16, 0.032, t, va="center", fontsize=6)
     save(fig, "fig1_framework.pdf")
 
 
-# ------------------------------------------------------------------------------------------------
-# Figure 2: the graph-pooled displacement field (module detail)
-# ------------------------------------------------------------------------------------------------
 def fig2():
-    fig, axes = plt.subplots(1, 3, figsize=(3.4, 1.6))
+    fig, axes = plt.subplots(1, 3, figsize=(SINGLE, 1.55))
     rng = np.random.default_rng(3)
-    # a small class graph: 9 classes in 3 semantic clusters
     centers = np.array([[0.25, 0.7], [0.72, 0.72], [0.5, 0.22]])
     pts = np.concatenate([c + 0.09 * rng.standard_normal((3, 2)) for c in centers])
     clusters = np.repeat(np.arange(3), 3)
     edges = [(i, j) for i in range(9) for j in range(i + 1, 9) if clusters[i] == clusters[j]] + [(0, 3), (4, 6), (2, 7)]
-    true_field = np.array([[0.12, 0.05], [0.12, 0.05], [0.12, 0.05], [-0.02, 0.12], [-0.02, 0.12], [-0.02, 0.12], [0.08, -0.1], [0.08, -0.1], [0.08, -0.1]])
+    true_field = np.array([[0.12, 0.05]] * 3 + [[-0.02, 0.12]] * 3 + [[0.08, -0.1]] * 3)
     counts = np.array([30, 1, 0, 25, 0, 2, 40, 0, 1])
-    noise = 0.08 * rng.standard_normal((9, 2)) / np.sqrt(np.maximum(counts, 1))[:, None]
-    emp = true_field + noise
-    titles = ["(a) empirical $e_k=\\bar{x}_k-t_k$", "(b) $\\lambda=0$: independent\nshrinkage to anchors", "(c) GRAFT: graph-pooled\nfield $D$"]
-    # closed form on the toy graph
+    emp = true_field + 0.08 * rng.standard_normal((9, 2)) / np.sqrt(np.maximum(counts, 1))[:, None]
     W = np.zeros((9, 9))
     for i, j in edges:
         W[i, j] = W[j, i] = 1.0
     dinv = 1 / np.sqrt(W.sum(1)); L = np.eye(9) - dinv[:, None] * W * dinv[None, :]
     def solve(alpha, lam):
-        N = np.diag(counts.astype(float)); Q = alpha * np.eye(9) + lam * L
-        return np.linalg.solve(N + Q, N @ np.where(counts[:, None] > 0, emp, 0))
+        N = np.diag(counts.astype(float)); return np.linalg.solve(N + alpha * np.eye(9) + lam * L, N @ np.where(counts[:, None] > 0, emp, 0))
     fields = [np.where(counts[:, None] > 0, emp, np.nan), solve(1.0, 0.0), solve(1.0, 6.0)]
-    for ax, title, F in zip(axes, titles, fields):
+    titles = ["Empirical $e_k=\\bar{x}_k-t_k$", "$\\lambda=0$ (anchor only)", "GRAFT ($\\lambda>0$)"]
+    for ax, title, F, let in zip(axes, titles, fields, "abc"):
         ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.set_aspect("equal"); ax.axis("off")
-        ax.set_title(title, fontsize=6.0, pad=2)
+        ax.set_title(title, fontsize=6.3, pad=3, x=0.55); ax.text(-0.02, 1.02, let, transform=ax.transAxes, fontsize=8, weight="bold")
         for i, j in edges:
-            ax.plot([pts[i, 0], pts[j, 0]], [pts[i, 1], pts[j, 1]], color="#cbd5e1", lw=0.8, zorder=1)
+            ax.plot([pts[i, 0], pts[j, 0]], [pts[i, 1], pts[j, 1]], color="#d0d0d0", lw=0.8, zorder=1)
         for k in range(9):
-            s = 10 + 1.2 * counts[k]
-            ax.scatter(pts[k, 0], pts[k, 1], s=s, color="white", edgecolor=C_NEW_E if counts[k] == 0 else C_FROZEN_E, lw=0.9, zorder=3)
+            ax.scatter(pts[k, 0], pts[k, 1], s=8 + 1.1 * counts[k], color="white", edgecolor=NEW[1] if counts[k] == 0 else "#555555", lw=0.9, zorder=3)
             if counts[k] == 0:
-                ax.text(pts[k, 0] + (0.07 if pts[k, 1] < 0.75 else -0.02), pts[k, 1] + (0.05 if pts[k, 1] < 0.75 else -0.11), "absent", fontsize=4.3, ha="left" if pts[k, 1] < 0.75 else "center", color=C_NEW_E)
+                dy = -0.1 if pts[k, 1] > 0.75 else 0.06
+                ax.text(pts[k, 0] + (0.0 if pts[k, 1] > 0.75 else 0.07), pts[k, 1] + dy, "absent", fontsize=4.8, ha="center" if pts[k, 1] > 0.75 else "left", color=NEW[1])
             v = F[k]
             if np.all(np.isfinite(v)):
                 ax.annotate("", xy=(pts[k, 0] + 1.6 * v[0], pts[k, 1] + 1.6 * v[1]), xytext=(pts[k, 0], pts[k, 1]),
-                            arrowprops=dict(arrowstyle="-|>", color=C_NEW_E if ax is axes[2] else "#374151", lw=0.9, mutation_scale=6), zorder=4)
-    axes[0].text(0.02, 0.02, "node size $\\propto n_k$", fontsize=4.8, transform=axes[0].transAxes)
-    axes[2].text(1.0, -0.16, "$D=(N_z+\\alpha I+\\lambda L_T)^{-1}N_z E$ ; absent/rare classes borrow their neighbours' displacement", fontsize=4.9,
-                 transform=axes[2].transAxes, ha="right")
-    plt.subplots_adjust(wspace=0.05, left=0.01, right=0.99, top=0.82, bottom=0.08)
+                            arrowprops=dict(arrowstyle="-|>", color=NEW[1] if ax is axes[2] else "#333333", lw=0.9, mutation_scale=6), zorder=4)
+    axes[0].text(0.02, 0.02, "node size $\\propto n_k$", fontsize=5, transform=axes[0].transAxes)
+    plt.subplots_adjust(wspace=0.05, left=0.01, right=0.99, top=0.84, bottom=0.02)
     save(fig, "fig2_module.pdf")
 
 
-# ------------------------------------------------------------------------------------------------
-# Figure 3: conceptual comparison (labelled as conceptual)
-# ------------------------------------------------------------------------------------------------
 def fig3():
-    fig, axes = plt.subplots(1, 3, figsize=(3.4, 1.5))
+    fig, axes = plt.subplots(1, 3, figsize=(SINGLE, 1.5))
     rng = np.random.default_rng(1)
-    # two present classes (A, B) and one absent class (C) whose anchor is near B's images
     tA, tB, tC = np.array([0.22, 0.75]), np.array([0.62, 0.72]), np.array([0.82, 0.62])
     shift = np.array([0.08, -0.32])
-    xA = tA + shift + 0.05 * rng.standard_normal((25, 2))
-    xB = tB + shift + 0.05 * rng.standard_normal((25, 2))
-    titles = ["(a) per-class fitting\n(no anchor)", "(b) anchor-only shrinkage", "(c) GRAFT"]
-    for ax, title in zip(axes, titles):
-        ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.set_aspect("equal"); ax.axis("off"); ax.set_title(title, fontsize=6.0, pad=2)
-        ax.scatter(xA[:, 0], xA[:, 1], s=4, color="#60a5fa", lw=0); ax.scatter(xB[:, 0], xB[:, 1], s=4, color="#34d399", lw=0)
-        for t, c, lab in [(tA, "#1d4ed8", "A"), (tB, "#047857", "B"), (tC, C_NEW_E, "C (absent)")]:
-            ax.scatter(*t, marker="*", s=28, color=c, zorder=5); ax.text(t[0] + 0.03, t[1] + 0.03, lab, fontsize=5, color=c)
-    # (a): C's prototype drifts to B's data and steals it
-    a = axes[0]
+    xA = tA + shift + 0.05 * rng.standard_normal((25, 2)); xB = tB + shift + 0.05 * rng.standard_normal((25, 2))
+    cA, cB, cC = OKABE_ITO["blue"], OKABE_ITO["green"], NEW[1]
+    titles = ["Per-class fitting", "Anchor-only shrinkage", "GRAFT"]
+    for ax, title, let in zip(axes, titles, "abc"):
+        ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.set_aspect("equal"); ax.axis("off"); ax.set_title(title, fontsize=6.3, pad=3, x=0.55)
+        ax.text(-0.02, 1.02, let, transform=ax.transAxes, fontsize=8, weight="bold")
+        ax.scatter(xA[:, 0], xA[:, 1], s=4, color=cA, alpha=0.5, lw=0); ax.scatter(xB[:, 0], xB[:, 1], s=4, color=cB, alpha=0.5, lw=0)
+        for t, c, lab in [(tA, cA, "A"), (tB, cB, "B"), (tC, cC, "C (absent)")]:
+            ax.scatter(*t, marker="*", s=30, color=c, zorder=5); ax.text(t[0] + 0.03, t[1] + 0.04, lab, fontsize=5.5, color=c)
+    a, b, c_ = axes
     muC = xB.mean(0) + np.array([0.05, 0.02])
-    a.annotate("", xy=muC, xytext=tC, arrowprops=dict(arrowstyle="-|>", color=C_NEW_E, lw=0.9, mutation_scale=6))
-    a.scatter(*muC, marker="X", s=22, color=C_NEW_E, zorder=6); a.text(0.02, 0.04, "absent C captures B's\nsamples (collapse)", fontsize=4.8, color=C_NEW_E)
-    a.annotate("", xy=xA.mean(0), xytext=tA, arrowprops=dict(arrowstyle="-|>", color="#1d4ed8", lw=0.8, mutation_scale=6))
-    # (b): anchored: A, B move partially; C stays at its (biased) anchor; rare classes under-adapted
-    b = axes[1]
-    for t, x, c in [(tA, xA, "#1d4ed8"), (tB, xB, "#047857")]:
+    a.annotate("", xy=muC, xytext=tC, arrowprops=dict(arrowstyle="-|>", color=cC, lw=0.9, mutation_scale=6)); a.scatter(*muC, marker="X", s=22, color=cC, zorder=6)
+    a.annotate("", xy=xA.mean(0), xytext=tA, arrowprops=dict(arrowstyle="-|>", color=cA, lw=0.8, mutation_scale=6))
+    a.text(0.02, 0.04, "absent C captures\nB's samples", fontsize=5, color=cC)
+    for t, x, c in [(tA, xA, cA), (tB, xB, cB)]:
         m = 0.6 * x.mean(0) + 0.4 * t
         b.annotate("", xy=m, xytext=t, arrowprops=dict(arrowstyle="-|>", color=c, lw=0.8, mutation_scale=6)); b.scatter(*m, marker="X", s=18, color=c, zorder=6)
-    b.scatter(*tC, marker="X", s=18, color=C_NEW_E, zorder=6); b.text(0.02, 0.04, "C frozen at a biased anchor;\nshift ignored for absent/rare", fontsize=4.8, color=C_NEW_E)
-    # (c): GRAFT: field shared through the graph, C moves with the domain shift, and presence suppresses it
-    c_ = axes[2]
-    for t, x, c in [(tA, xA, "#1d4ed8"), (tB, xB, "#047857")]:
-        m = x.mean(0)
-        c_.annotate("", xy=m, xytext=t, arrowprops=dict(arrowstyle="-|>", color=c, lw=0.8, mutation_scale=6)); c_.scatter(*m, marker="X", s=18, color=c, zorder=6)
+    b.scatter(*tC, marker="X", s=18, color=cC, zorder=6); b.text(0.02, 0.04, "C stays at a\nbiased anchor", fontsize=5, color=cC)
+    for t, x, c in [(tA, xA, cA), (tB, xB, cB)]:
+        m = x.mean(0); c_.annotate("", xy=m, xytext=t, arrowprops=dict(arrowstyle="-|>", color=c, lw=0.8, mutation_scale=6)); c_.scatter(*m, marker="X", s=18, color=c, zorder=6)
+    c_.plot([tB[0], tC[0]], [tB[1], tC[1]], color="#d0d0d0", lw=0.8, zorder=1)
     mC = tC + shift
-    c_.plot([tB[0], tC[0]], [tB[1], tC[1]], color="#cbd5e1", lw=0.8, zorder=1)
-    c_.annotate("", xy=mC, xytext=tC, arrowprops=dict(arrowstyle="-|>", color=C_NEW_E, lw=0.9, mutation_scale=6, ls="--"))
-    c_.scatter(*mC, marker="X", s=18, color=C_NEW_E, zorder=6, alpha=0.5)
-    c_.text(0.02, 0.04, "C borrows B's displacement;\n$\\pi_C\\!\\to\\!0$ (presence)", fontsize=4.8, color=C_NEW_E)
-    fig.text(0.5, -0.02, "Conceptual illustration (2-D cartoon of the embedding space), not experimental data.", ha="center", fontsize=4.8, style="italic")
-    plt.subplots_adjust(wspace=0.05, left=0.01, right=0.99, top=0.82, bottom=0.02)
+    c_.annotate("", xy=mC, xytext=tC, arrowprops=dict(arrowstyle="-|>", color=cC, lw=0.9, mutation_scale=6, ls="--")); c_.scatter(*mC, marker="X", s=18, color=cC, zorder=6, alpha=0.5)
+    c_.text(0.02, 0.04, "C borrows B's shift;\n$\\pi_C\\to 0$", fontsize=5, color=cC)
+    plt.subplots_adjust(wspace=0.05, left=0.01, right=0.99, top=0.84, bottom=0.02)
     save(fig, "fig3_concept.pdf")
 
 
 if __name__ == "__main__":
-    fig1(); fig2(); fig3()
-    print("figures written to", OUT)
+    fig1(); fig2(); fig3(); print("figures written")

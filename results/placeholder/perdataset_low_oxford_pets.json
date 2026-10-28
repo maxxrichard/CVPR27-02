@@ -1,0 +1,10 @@
+{
+ "dataset": "oxford_pets",
+ "setting": "B64_K2-10",
+ "zero_shot": 89.1,
+ "stata": 92.9,
+ "graft": 95.1,
+ "graft_std": 0.5,
+ "stata_std": 0.4,
+ "placeholder": true
+}

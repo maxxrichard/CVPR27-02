@@ -82,10 +82,27 @@ The batch sampler draws $K_{\mathrm{eff}}$ uniformly in $[k_{\min},k_{\max}]$, s
 \end{table}
 
 
+\section{Mechanism on synthetic data}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_embedding_synthetic.pdf}
+  \caption{Adapted prototypes on synthetic data (6 of 24 classes present, PCA to two dimensions). Arrows go from text anchors to adapted prototypes; orange marks absent classes and circles their true centroids.}
+  \label{fig:embed}
+\end{figure}
+\noindent With $\lambda=0$ absent classes stay at their anchors, whereas the pooled field moves them towards the centroids their images would occupy.
+
+\section{Sensitivity curves}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_sensitivity.pdf}
+  \caption{Sensitivity to the prior strengths and the graph size in the low setting (mean and standard deviation over tasks).}
+  \label{fig:sens}
+\end{figure}
+
 \section{Additional result tables}
 \begin{table}[h]
   \centering\footnotesize
-  \caption{\textbf{Backbones and distribution shifts}, low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$), top-1 accuracy (\%). IN: ImageNet; V2/S/A/R: its shifted variants.}
+  \caption{Backbones and distribution shifts, low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$), top-1 accuracy (\%). IN: ImageNet; V2/S/A/R: its shifted variants.}
   \label{tab:backbones}
   \begin{tabular}{llccccc}
     \toprule
@@ -109,7 +126,7 @@ The batch sampler draws $K_{\mathrm{eff}}$ uniformly in $[k_{\min},k_{\max}]$, s
 
 \begin{table}[h]
   \centering\footnotesize
-  \caption{\textbf{Trustworthiness} in the low setting ($B{=}64$), averaged over eleven datasets, CLIP ViT-B/16. ECE and NLL: lower is better; worst-decile accuracy: higher is better.}
+  \caption{Trustworthiness in the low setting ($B{=}64$), averaged over eleven datasets, CLIP ViT-B/16. ECE and NLL: lower is better; worst-decile accuracy: higher is better.}
   \label{tab:calib}
   \begin{tabular}{lccc}
     \toprule
@@ -127,7 +144,7 @@ The batch sampler draws $K_{\mathrm{eff}}$ uniformly in $[k_{\min},k_{\max}]$, s
 
 \begin{table}[h]
   \centering\footnotesize
-  \caption{\textbf{Likelihood, optimisation and cost}, low setting. Time is the wall-clock per task of 64 images on one GPU with cached features (ImageNet, $K{=}1000$).}
+  \caption{Likelihood, optimisation and cost, low setting. Time is the wall-clock per task of 64 images on one GPU with cached features (ImageNet, $K{=}1000$).}
   \label{tab:opt}
   \begin{tabular}{lcc}
     \toprule
@@ -147,7 +164,7 @@ The batch sampler draws $K_{\mathrm{eff}}$ uniformly in $[k_{\min},k_{\max}]$, s
 
 \begin{table}[h]
   \centering\footnotesize
-  \caption{\textbf{Computational cost.} Asymptotic cost per outer iteration and measured time per task ($B{=}64$, ImageNet, one GPU).}
+  \caption{Computational cost: asymptotic cost per outer iteration and measured time per task ($B{=}64$, ImageNet, one GPU).}
   \label{tab:cost}
   \begin{tabular}{lll}
     \toprule

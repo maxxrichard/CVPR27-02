@@ -1,0 +1,10 @@
+{
+ "dataset": "fgvc",
+ "setting": "B64_K2-10",
+ "zero_shot": 24.8,
+ "stata": 29.9,
+ "graft": 32.0,
+ "graft_std": 0.3,
+ "stata_std": 0.2,
+ "placeholder": true
+}

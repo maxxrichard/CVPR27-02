@@ -47,4 +47,15 @@ for p, vals in {"alpha": {0.0: 69.0, 0.25: 70.2, 1.0: 70.7, 4.0: 70.4, 16.0: 69.
                 "knn": {3: 70.4, 5: 70.7, 10: 70.5}}.items():
     for v, a in vals.items():
         json.dump({"param": p, "value": v, "acc_mean": a, "acc_std": 0.3, "placeholder": True}, open(os.path.join(OUT, f"sens_{p}_{v}_avg11.json"), "w"), indent=1)
+# per-dataset accuracy in the low setting (placeholders around typical zero-shot levels of each dataset)
+ZS = {"imagenet": 66.7, "sun397": 62.6, "fgvc": 24.8, "eurosat": 47.8, "stanford_cars": 65.3, "food101": 86.1, "oxford_pets": 89.1,
+      "oxford_flowers": 71.3, "caltech101": 93.3, "dtd": 44.4, "ucf101": 66.7}
+for ds, z in ZS.items():
+    g_stata = float(rng.uniform(2.0, 6.0)); g_graft = g_stata + float(rng.uniform(0.6, 2.6))
+    json.dump({"dataset": ds, "setting": "B64_K2-10", "zero_shot": z, "stata": round(z + g_stata, 1), "graft": round(z + g_graft, 1),
+               "graft_std": round(float(rng.uniform(0.2, 0.5)), 1), "stata_std": round(float(rng.uniform(0.2, 0.5)), 1), "placeholder": True},
+              open(os.path.join(OUT, f"perdataset_low_{ds}.json"), "w"), indent=1)
+# posterior mass on absent classes versus number of effective classes (ImageNet, B = 64); placeholders
+for keff, zs, st, gr in [(1, 31.0, 11.5, 4.1), (2, 28.4, 10.2, 3.6), (4, 24.9, 8.7, 3.0), (10, 19.3, 6.4, 2.3), (25, 12.8, 4.5, 1.7), (50, 8.1, 3.0, 1.2)]:
+    json.dump({"keff": keff, "zero_shot": zs, "stata": st, "graft": gr, "placeholder": True}, open(os.path.join(OUT, f"absentmass_keff{keff}.json"), "w"), indent=1)
 print("placeholder results written to", OUT)

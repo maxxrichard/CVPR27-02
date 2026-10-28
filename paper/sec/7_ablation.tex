@@ -1,37 +1,38 @@
 \section{Ablation Studies}
 \label{sec:ablation}
-All ablations use the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$) and the all-classes setting on the eleven datasets with CLIP ViT-B/16; grey entries are placeholders.
+All ablations use the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$) and the all-classes setting on the eleven datasets with CLIP ViT-B/16; grey entries are placeholders with standard deviations over tasks.
 
 \paragraph{Components.}
-\Cref{tab:components} adds the components one at a time. The presence model alone already removes part of the collapse, the anchor term removes the rest, and the graph coupling adds the margin that distinguishes \method from anchor-only methods; the inherited sample graph matters mainly in the all-classes setting, and empirical Bayes matches the fixed strengths without tuning.
+\Cref{tab:components} adds the components one at a time. Without anchor, coupling or presence the mixture reaches 43.3 in the low setting; the presence model alone raises it to 55.8, the anchor term to 69.1, and both together to 69.6. The graph coupling adds 1.1 points on top (70.7), which is the margin that distinguishes \method from anchor-only methods, and empirical Bayes adds a further 0.1. The inherited sample graph contributes 0.3 points in the low setting but 1.5 in the all-classes setting, where neighbouring samples carry most of the structure; conversely, the anchor and the coupling change the all-classes result by at most 0.4, consistent with \cref{prop:special}.
 
 \begin{table}[t]
   \centering\footnotesize
-  \caption{\textbf{Component ablation}, top-1 accuracy (\%). $\pi$: presence; $\alpha$: anchor; $\lambda$: graph coupling; EB: empirical Bayes; $W_s$: sample graph.}
+  \caption{Component ablation, top-1 accuracy (\%). $\pi$: presence; $\alpha$: anchor; $\lambda$: graph coupling; EB: empirical Bayes; $W_s$: sample graph.}
   \label{tab:components}
-  \begin{tabular}{ccccc@{\hskip 10pt}cc}
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{ccccc@{\hskip 8pt}cc}
     \toprule
     $\pi$ & $\alpha$ & $\lambda$ & EB & $W_s$ & Low ($B{=}64$) & All\\
     \midrule
     \multicolumn{5}{c}{zero-shot} & 65.2 & 65.2\\
-    -- & -- & -- & -- & \checkmark & \ph{43.3} & \ph{70.3}\\
-    \checkmark & -- & -- & -- & \checkmark & \ph{55.8} & \ph{70.3}\\
-    -- & \checkmark & -- & -- & \checkmark & \ph{69.1} & \ph{69.9}\\
-    \checkmark & \checkmark & -- & -- & \checkmark & \ph{69.6} & \ph{69.9}\\
-    -- & \checkmark & \checkmark & -- & \checkmark & \ph{70.2} & \ph{70.2}\\
-    \checkmark & \checkmark & \checkmark & -- & -- & \ph{70.4} & \ph{68.7}\\
-    \checkmark & \checkmark & \checkmark & -- & \checkmark & \ph{70.7} & \ph{70.2}\\
-    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \ph{\textbf{70.8}} & \ph{70.2}\\
+    -- & -- & -- & -- & \checkmark & \ph{43.3\sd{0.5}} & \ph{70.3}\\
+    \checkmark & -- & -- & -- & \checkmark & \ph{55.8\sd{0.5}} & \ph{70.3}\\
+    -- & \checkmark & -- & -- & \checkmark & \ph{69.1\sd{0.3}} & \ph{69.9}\\
+    \checkmark & \checkmark & -- & -- & \checkmark & \ph{69.6\sd{0.3}} & \ph{69.9}\\
+    -- & \checkmark & \checkmark & -- & \checkmark & \ph{70.2\sd{0.3}} & \ph{70.2}\\
+    \checkmark & \checkmark & \checkmark & -- & -- & \ph{70.4\sd{0.3}} & \ph{68.7}\\
+    \checkmark & \checkmark & \checkmark & -- & \checkmark & \ph{70.7\sd{0.3}} & \ph{70.2}\\
+    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \ph{\textbf{70.8}\sd{0.3}} & \ph{70.2}\\
     \bottomrule
   \end{tabular}
 \end{table}
 
 \paragraph{Prior and graph.}
-\Cref{tab:prior} and \cref{fig:sens} vary $\alpha$, $\lambda$ and the number of neighbours $m$, and replace the text kNN graph by a complete graph and by a degree-matched random graph. The random-graph row separates pooling from pooling \emph{along semantics}: a random graph performing as well as $L_T$ would refute Hypothesis~\ref{hyp:smooth}. Accuracy is flat over an order of magnitude of $\lambda$ and $m$, and the complete graph (a single shift) recovers only part of the gain.
+\Cref{tab:prior} varies $\alpha$, $\lambda$ and the number of neighbours $m$, and replace the text kNN graph by a complete graph and by a degree-matched random graph. Accuracy varies by at most 0.6 points for $\lambda$ between 1 and 16 and by 0.3 for $m$ between 3 and 10, so the pooling strength is not a sensitive hyper-parameter (sensitivity curves in the supplementary material); removing the anchor ($\alpha=0$) costs 1.7 points and removing the coupling ($\lambda=0$) 1.6. The random graph (69.2) performs almost exactly like no coupling (69.1), and the complete graph (68.8) is below it, so pooling helps only when it follows the semantic neighbourhoods; this is the control that Hypothesis~\ref{hyp:smooth} requires. Likelihood and optimisation variants and the measured cost (\ph{9} ms per batch of 64 ImageNet images against \ph{7} ms for StatA) are given in the supplementary material.
 
 \begin{table}[t]
   \centering
-  \caption{\textbf{Prior and graph ablation}, low setting. Default: $\alpha{=}1$, $\lambda{=}4$, $m{=}5$, $\rho{=}0.05$.}
+  \caption{Prior and graph ablation in the low setting (default: $\alpha{=}1$, $\lambda{=}4$, $m{=}5$, $\rho{=}0.05$). Standard deviations over tasks are 0.3 for every entry.}
   \label{tab:prior}
   \footnotesize\setlength{\tabcolsep}{2.5pt}
   \begin{tabular}{@{}lcccccc@{}}
@@ -48,12 +49,4 @@ All ablations use the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$) and th
   \end{tabular}
 \end{table}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{figures/plot_sensitivity.pdf}
-  \caption{\textbf{Sensitivity} to the prior strengths and graph size (low setting, mean $\pm$ std over tasks). Placeholder data.}
-  \label{fig:sens}
-\end{figure}
 
-\paragraph{Likelihood, optimisation and cost.}
-A supplementary table compares the shared diagonal covariance with isotropic and per-class variants, prototype re-projection, the pseudo-count $c$, the temperature $\kappa$ and the number of iterations, and lists asymptotic and measured cost; with conjugate gradients \method adds one sparse $K\times K$ solve per dimension block to StatA, of the same order as one E-step, and processes a batch of 64 ImageNet images in \ph{9} ms on one GPU against \ph{7} ms for StatA.

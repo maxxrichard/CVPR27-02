@@ -1,0 +1,10 @@
+{
+ "dataset": "imagenet",
+ "setting": "B64_K2-10",
+ "zero_shot": 66.7,
+ "stata": 70.3,
+ "graft": 72.2,
+ "graft_std": 0.2,
+ "stata_std": 0.3,
+ "placeholder": true
+}

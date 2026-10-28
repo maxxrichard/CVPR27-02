@@ -22,6 +22,11 @@ Paper draft: `paper/main.tex` (official CVPR author-kit style, unmodified). Repo
   EM-Dirichlet, ZLaP, TransCLIP, StatA, TENT, TDA, DMN) are the 11-dataset means from the official StatA README.
   Replace the placeholders by real runs (`docs/G_experiment_plan.md`); `visualization/plot_paper_figures.py`
   switches automatically to `results/raw/` when real result files exist and drops the watermark.
+* Figures follow the scientific-visualization conventions (Okabe-Ito colorblind-safe palette, single/double
+  column widths, despined axes, error bars, panel letters; `visualization/pubstyle.py`). The Canva connector
+  was tried for the architecture diagram and plots but the account's credit quota was exhausted
+  (`quota_exceeded`), so all figures are drawn with matplotlib (`visualization/draw_architecture.py`,
+  `visualization/plot_paper_figures.py`).
 * Paper uses the official CVPR 2027 author kit (`paper/cvpr.sty`, `ieeenat_fullname.bst`, unmodified).
 * `blueprint/` holds the reference and notes for the blueprint paper (StatA, CVPR 2025) and `fetch.sh` to
   download the PDF (the authoring session could not reach arxiv.org / openaccess.thecvf.com).

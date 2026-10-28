@@ -1,0 +1,10 @@
+{
+ "dataset": "eurosat",
+ "setting": "B64_K2-10",
+ "zero_shot": 47.8,
+ "stata": 53.4,
+ "graft": 54.9,
+ "graft_std": 0.5,
+ "stata_std": 0.3,
+ "placeholder": true
+}

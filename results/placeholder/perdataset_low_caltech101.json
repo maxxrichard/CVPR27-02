@@ -1,0 +1,10 @@
+{
+ "dataset": "caltech101",
+ "setting": "B64_K2-10",
+ "zero_shot": 93.3,
+ "stata": 96.3,
+ "graft": 98.3,
+ "graft_std": 0.3,
+ "stata_std": 0.5,
+ "placeholder": true
+}

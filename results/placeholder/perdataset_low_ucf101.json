@@ -1,0 +1,10 @@
+{
+ "dataset": "ucf101",
+ "setting": "B64_K2-10",
+ "zero_shot": 66.7,
+ "stata": 71.4,
+ "graft": 73.6,
+ "graft_std": 0.2,
+ "stata_std": 0.3,
+ "placeholder": true
+}
