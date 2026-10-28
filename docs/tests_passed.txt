@@ -1,0 +1,11 @@
+Unit test run: 2026-10-28T12:50Z, torch 2.14.1+cu130, CPU only, synthetic tensors only (no datasets, no pretrained models).
+============================= test session starts ==============================
+platform linux -- Python 3.13.17, pytest-9.2.0, pluggy-1.7.0
+rootdir: /home/user/CVPR27-02
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collected 17 items
+
+tests/test_graft.py .................                                    [100%]
+
+============================== 17 passed in 6.97s ==============================

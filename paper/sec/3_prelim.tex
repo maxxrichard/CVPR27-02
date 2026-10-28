@@ -1,0 +1,24 @@
+\section{Preliminaries}
+\label{sec:prelim}
+
+\paragraph{Zero-shot classification.}
+A VLM provides an image encoder $f_v$ and a text encoder $f_t$ mapping into a common space $\R^d$. For a vocabulary of $K$ class names, prompt ensembling yields unit-norm text anchors $t_k = f_t(c_k)/\|f_t(c_k)\|$, collected in $T\in\R^{K\times d}$. A test image gives $x_i = f_v(I_i)/\|f_v(I_i)\|$, collected in $X\in\R^{N\times d}$. The zero-shot posterior is
+\begin{equation}
+  \hat{y}_{ik} = \frac{\exp(\tau\, x_i^{\top} t_k)}{\sum_{l}\exp(\tau\, x_i^{\top} t_l)},
+  \label{eq:zs}
+\end{equation}
+with logit scale $\tau$ (100 for CLIP). We write $\Delta^K$ for the probability simplex and $\mathbf{1}$ for the all-ones vector.
+
+\paragraph{Unlabeled adaptation.}
+Given $X$ and $T$ only, the goal is to output posteriors $z_i\in\Delta^K$ that are more accurate and at least as well calibrated as $\hat{y}_i$. In the batch setting $X$ is processed at once; in the online setting batches $X^{(1)}, X^{(2)},\dots$ arrive sequentially and each must be predicted when it arrives. Following~\cite{zanella2025stata}, batches contain a variable number $K_{\mathrm{eff}}\le K$ of effective classes and online streams are correlated.
+
+\paragraph{Mixture-model transduction and its anchors.}
+TransCLIP~\cite{zanella2024transclip} and StatA~\cite{zanella2025stata} model $x_i$ with a $K$-component Gaussian mixture $\mathcal{N}(\mu_k,\Sigma_k)$ and minimise, over assignments $z$ and parameters, a penalised negative log-likelihood that contains a KL anchor to $\hat{y}$ and a Laplacian term over a $k$-nearest-neighbour graph $W_s$ of the samples. StatA additionally shrinks the mean of class $k$ towards its anchor,
+\begin{equation}
+  \mu_k = \beta_k\,\bar{x}_k + (1-\beta_k)\,t_k, \qquad \beta_k = \frac{n_k}{n_k+\alpha},
+  \label{eq:stata}
+\end{equation}
+with $n_k = \sum_i z_{ik}$ the soft count and $\bar{x}_k$ the responsibility-weighted mean. \Cref{eq:stata} is the posterior mean of $\mu_k$ under an independent Gaussian prior centred at $t_k$ with precision proportional to $\alpha$. Hence (i) a class with $n_k=0$ keeps $\mu_k = t_k$ even when every present class has moved by a common offset, (ii) a class with small $n_k$ is estimated from its own few samples only, and (iii) the mixture weights are implicitly uniform, so absent classes keep competing for samples. \method addresses (i) and (ii) by coupling the classes through a graph prior and (iii) by estimating the class proportions.
+
+\paragraph{Semantic class graph.}
+Let $S = TT^{\top}$ be the cosine similarity between class anchors. We connect each class to its $m$ most similar classes with weight $w_{kl} = \exp((S_{kl}-1)/\rho)$, symmetrise by taking the union of the two neighbourhoods, and form the normalised Laplacian $L_T = I - \mathrm{D}^{-1/2} W \mathrm{D}^{-1/2}$ with $\mathrm{D} = \diag(W\mathbf{1})$. $L_T$ is positive semi-definite with spectrum in $[0,2]$, is computed once per vocabulary from the text encoder only, and requires no image.

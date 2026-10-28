@@ -1,0 +1,46 @@
+CVPR 2025 titles: 3532   CVPR 2026 titles: 4070
+area                                                                          2025   2026    %25    %26  growth
+Vision-language / multimodal (VLM, MLLM, CLIP, vision-language)                435    686   12.3   16.9    1.37x
+Generative: diffusion / flow matching                                          387    378   11.0    9.3    0.85x
+Video generation / world models                                                114    149    3.2    3.7    1.13x
+3D reconstruction / novel view / Gaussian splatting / NeRF                     167    208    4.7    5.1    1.08x
+Embodied AI / robotics / VLA                                                    84    166    2.4    4.1    1.71x
+Open-vocabulary recognition / segmentation                                      34     51    1.0    1.3    1.30x
+Test-time adaptation / test-time training / transductive                        38     66    1.1    1.6    1.51x
+Zero-shot / few-shot / training-free adaptation                                155    172    4.4    4.2    0.96x
+Segmentation / dense prediction                                                233    230    6.6    5.7    0.86x
+Self-supervised / representation learning / foundation model features          136    119    3.9    2.9    0.76x
+Medical imaging                                                                 63     90    1.8    2.2    1.24x
+Robustness / OOD / domain generalization / adaptation                          178    170    5.0    4.2    0.83x
+Efficiency / compression / distillation / token pruning                        283    359    8.0    8.8    1.10x
+Model merging / task vectors                                                    10     23    0.3    0.6    2.00x
+Calibration / uncertainty / conformal                                           62     79    1.8    1.9    1.11x
+Video understanding                                                             43     71    1.2    1.7    1.43x
+Agents                                                                          36    100    1.0    2.5    2.41x
+Test-time (scaling|compute|training) phrases                                     3     12    0.1    0.3    3.47x
+
+--- CVPR 2025 titles matching test-time/transductive AND (CLIP|vision-language|zero-shot|VLM):
+ * Online Gaussian Test-Time Adaptation of Vision-Language Models.
+ * COSMIC: Clique-Oriented Semantic Multi-space Integration for Robust CLIP Test-Time Adaptation.
+ * O-TPT: Orthogonality Constraints for Calibrating Test-time Prompt Tuning in Vision-Language Models.
+ * R-TPT: Improving Adversarial Robustness of Vision-Language Models through Test-Time Prompt Tuning.
+ * TAPT: Test-Time Adversarial Prompt Tuning for Robust Inference in Vision-Language Models.
+ * CLIP is Strong Enough to Fight Back: Test-time Counterattacks towards Zero-shot Adversarial Robustness of CLIP.
+ * Realistic Test-Time Adaptation of Vision-Language Models.
+ * Bayesian Test-Time Adaptation for Vision-Language Models.
+
+--- CVPR 2026 titles matching the same filter:
+ * LATA: Laplacian-Assisted Transductive Adaptation for Conformal Uncertainty in Medical VLMs
+ * A Provable Energy-Guided Test-Time Defense Boosting Adversarial Robustness of Large Vision-Language Models
+ * Activation Matters: Test-time Activated Negative Labels for OOD Detection with Vision-Language Models
+ * Condensed Test-Time Adaptation of VLMs for Action Recognition
+ * Dynamic Logits Adjustment and Exploration for Test-Time Adaptation in Vision Language Models
+ * Improving Calibration in Test-Time Prompt Tuning for Vision-Language Models via Data-Free Flatness-Aware Prompt Pretraining
+ * STAR: Test-Time Adaptation Can Enhance Universal Prompt Learning for Vision-Language Models
+ * Scaling Test-Time Robustness of Vision-Language Models via Self-Critical Inference Framework
+ * TTL: Test-time Textual Learning for OOD Detection with Pretrained Vision-Language Models
+ * TTP: Test-Time Padding for Adversarial Detection and Robust Adaptation on Vision-Language Models
+ * TTRV: Test-Time Reinforcement Learning for Vision Language Models
+ * Test-Time Attention Purification for Backdoored Large Vision Language Models
+ * Test-Time Perturbation Tuning with Delayed Feedback for Vision-Language-Action Models
+ * When CLIP Sees More, It Fights Back Harder: Multi-View Guided Adaptive Counterattacks for Test-Time Adversarial Robustness

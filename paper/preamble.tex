@@ -1,0 +1,25 @@
+%% Additional packages used by the manuscript (the official cvpr.sty already loads amsmath, amssymb,
+%% booktabs, graphicx, xcolor, natbib, caption and subcaption).  cvpr.sty is NOT modified.
+\usepackage{cuted}      % two-column strip for the framework figure
+\usepackage{amsthm}
+\usepackage{multirow}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{xspace}
+\usepackage{bm}
+\newcommand{\method}{GRAFT\xspace}
+\newcommand{\TBD}{\textcolor{gray}{TBD}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\diag}{diag}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\sph}{\mathbb{S}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
+\newtheorem{hypothesis}{Hypothesis}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\AtBeginDocument{\crefname{hypothesis}{Hypothesis}{Hypotheses}\Crefname{hypothesis}{Hypothesis}{Hypotheses}\crefname{proposition}{Proposition}{Propositions}\Crefname{proposition}{Proposition}{Propositions}\crefname{algorithm}{Algorithm}{Algorithms}\Crefname{algorithm}{Algorithm}{Algorithms}}

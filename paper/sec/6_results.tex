@@ -1,0 +1,73 @@
+\section{Results}
+\label{sec:results}
+Entries marked \TBD\ are pending; the released scripts regenerate every table from the result files.
+
+\subsection{Main comparison under realistic batches}
+\Cref{tab:main} compares \method with the published methods and the architecture-matched controls under the seven batch settings, averaged over the eleven datasets with CLIP ViT-B/16. The decisive comparison is between \method and the anchor-only control, which differ only by the cross-class coupling $\lambda L_T$ and the presence model. The pre-registered criterion is that \method is above zero-shot in every setting (no collapse) and above the anchor-only control in the very-low and low settings; a tie in the all-classes setting is expected since \cref{prop:special} makes the mechanisms coincide for large $n_k$.
+
+\begin{table*}[t]
+  \centering\small
+  \caption{\textbf{Batch adaptation with a variable number of effective classes}, top-1 accuracy (\%) averaged over 1000 tasks and the eleven datasets, CLIP ViT-B/16. Rows above the rule are published methods run with their official code through the common harness; rows below are architecture-matched controls sharing our likelihood. \TBD: pending run. Best and second best will be marked in bold and underlined once the runs complete.}
+  \label{tab:main}
+  \begin{tabular}{lccccccc}
+    \toprule
+    Method & Very low & Low & Medium & Medium & High & Very high & All\\
+     & $B{=}64$ & $B{=}64$ & $B{=}64$ & $B{=}1000$ & $B{=}1000$ & $B{=}1000$ & full\\
+    \midrule
+    CLIP zero-shot~\cite{radford2021clip} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    MTA~\cite{zanella2024mta} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    EM-Dirichlet~\cite{martin2024transductive} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    ZLaP~\cite{kalantidis2024zlap} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    ECALP~\cite{li2025ecalp} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    TransCLIP~\cite{zanella2024transclip} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    StatA~\cite{zanella2025stata} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    MOON~\cite{huang2026moon} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    \midrule
+    Unanchored mixture ($\alpha{=}\lambda{=}0$, no $\pi$) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    Presence only ($\pi$, no field) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    Anchor-only shrinkage ($\lambda{=}0$) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    Complete pooling (global shift) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    \method (fixed $\alpha,\lambda$) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    \method + empirical Bayes & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\subsection{Online adaptation on correlated streams}
+\Cref{tab:online} reports the online protocol, where the failure mode of per-class methods is drift: in a correlated stream, prototypes of classes that have not appeared for a long time are stale or were fitted to foreign samples. \method keeps absent classes tied to their neighbours through the field and lets the presence estimate follow the stream.
+
+\begin{table}[t]
+  \centering\small
+  \caption{\textbf{Online adaptation}, top-1 accuracy (\%) averaged over 100 runs and eleven datasets, batches of 128, CLIP ViT-B/16. Low/Medium/High: stream correlation $\gamma\in\{0.1, 0.01, 0.001\}$; Separate: classes arrive sequentially.}
+  \label{tab:online}
+  \footnotesize\setlength{\tabcolsep}{4pt}
+  \begin{tabular}{lcccc}
+    \toprule
+    Method & Low & Medium & High & Separate\\
+    \midrule
+    CLIP zero-shot & \TBD & \TBD & \TBD & \TBD\\
+    TENT~\cite{wang2021tent} & \TBD & \TBD & \TBD & \TBD\\
+    TDA~\cite{karmanov2024tda} & \TBD & \TBD & \TBD & \TBD\\
+    DMN~\cite{zhang2024dmn} & \TBD & \TBD & \TBD & \TBD\\
+    OGA~\cite{fuchs2025oga} & \TBD & \TBD & \TBD & \TBD\\
+    StatA~\cite{zanella2025stata} & \TBD & \TBD & \TBD & \TBD\\
+    MOON~\cite{huang2026moon} & \TBD & \TBD & \TBD & \TBD\\
+    \midrule
+    \method (transductive within batch) & \TBD & \TBD & \TBD & \TBD\\
+    \method (predict before update) & \TBD & \TBD & \TBD & \TBD\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Backbones and distribution shifts}
+A table in the supplementary material tests the backbone-agnostic claim on OpenCLIP and SigLIP encoders and on the ImageNet shifts (low setting, $B{=}64$). Because \method uses only cosine geometry, soft counts and the class graph, no component depends on CLIP-specific logit statistics beyond the inherited temperature.
+
+
+
+\subsection{Calibration and tail behaviour}
+A supplementary table reports expected calibration error, negative log-likelihood and worst-decile accuracy in the low setting. The presence model is expected to improve calibration on batches with few classes, because it removes probability mass from classes that are not there, whereas the field is expected to improve accuracy without changing the confidence structure; both expectations are testable in the table.
+
+
+
+\subsection{Testing the smoothness hypothesis}
+\Cref{hyp:smooth} is evaluated with labels, independently of any method: for every dataset we compute the oracle displacement field and the ratio of its Dirichlet energy on $L_T$ to the mean energy over twenty degree-preserving random relabellings. A ratio well below one supports the hypothesis; a ratio near one on a dataset predicts that \method matches but does not exceed the anchor-only control there, a dataset-level prediction that \cref{tab:main} can confirm or refute. The plot is produced by the released analysis script and will be added once computed.

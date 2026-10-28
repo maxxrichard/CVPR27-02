@@ -1,0 +1,58 @@
+\section{Ablation Studies}
+\label{sec:ablation}
+All ablations use the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$) and the all-classes setting on the eleven datasets with CLIP ViT-B/16, so that each component is tested both where absent classes dominate and where they do not.
+
+\paragraph{Components.}
+\Cref{tab:components} adds the components one at a time to the inherited mixture. The field prior and the presence model are the two novel components; the sample graph and the KL anchor are inherited and are also removed to measure their share.
+
+\begin{table}[t]
+  \centering\small
+  \caption{\textbf{Component ablation}, top-1 accuracy (\%) averaged over eleven datasets. $\pi$: presence model; $\alpha$: anchor term; $\lambda$: graph coupling; EB: empirical Bayes; $W_s$: inherited sample graph.}
+  \label{tab:components}
+  \footnotesize
+  \begin{tabular}{ccccc@{\hskip 10pt}cc}
+    \toprule
+    $\pi$ & $\alpha$ & $\lambda$ & EB & $W_s$ & Low ($B{=}64$) & All\\
+    \midrule
+    \multicolumn{5}{c}{zero-shot} & \TBD & \TBD\\
+    -- & -- & -- & -- & \checkmark & \TBD & \TBD\\
+    \checkmark & -- & -- & -- & \checkmark & \TBD & \TBD\\
+    -- & \checkmark & -- & -- & \checkmark & \TBD & \TBD\\
+    \checkmark & \checkmark & -- & -- & \checkmark & \TBD & \TBD\\
+    -- & \checkmark & \checkmark & -- & \checkmark & \TBD & \TBD\\
+    \checkmark & \checkmark & \checkmark & -- & -- & \TBD & \TBD\\
+    \checkmark & \checkmark & \checkmark & -- & \checkmark & \TBD & \TBD\\
+    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \TBD & \TBD\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Prior strength and graph.}
+\Cref{tab:prior} varies $\alpha$, $\lambda$ and the number of neighbours $m$, and replaces the text kNN graph by a complete graph and by a degree-matched random graph. The random-graph row separates pooling from pooling \emph{along semantics}: if it performs as well as $L_T$, \cref{hyp:smooth} is refuted for that benchmark.
+
+\begin{table}[t]
+  \centering\small
+  \caption{\textbf{Prior and graph ablation}, low setting, top-1 accuracy (\%) averaged over eleven datasets. Default: $\alpha{=}1$, $\lambda{=}4$, $m{=}5$, $\rho{=}0.05$.}
+  \label{tab:prior}
+  \footnotesize\setlength{\tabcolsep}{2.5pt}
+  \begin{tabular}{@{}lcccccc@{}}
+    \toprule
+    $\alpha$ & 0 & 0.25 & 1 & 4 & 16 & \\
+    acc. & \TBD & \TBD & \TBD & \TBD & \TBD & \\
+    \midrule
+    $\lambda$ & 0 & 1 & 4 & 16 & 64 & $\infty$\\
+    acc. & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    \midrule
+    graph & $m{=}3$ & $m{=}5$ & $m{=}10$ & compl. & rand. & \\
+    acc. & \TBD & \TBD & \TBD & \TBD & \TBD & \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Likelihood and optimisation choices.}
+A supplementary table compares the shared diagonal covariance with an isotropic one and with the per-class covariances of StatA, re-projection of prototypes onto the sphere, the presence pseudo-count $c$, the inherited temperature $\kappa$, and the number of outer iterations, together with the measured time per task.
+
+
+
+\paragraph{Failure cases.}
+Two failure modes are anticipated and will be reported with examples: a class whose text neighbours are visually unrelated (a polysemous name) receives a wrong displacement when absent or rare, which the $\alpha$ term bounds and the random-graph control quantifies; and a batch mixing two domains, which a single field per class cannot represent (\cref{sec:conclusion}).

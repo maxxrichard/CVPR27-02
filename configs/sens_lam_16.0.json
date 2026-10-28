@@ -1,0 +1,40 @@
+{
+ "logit_scale": 100.0,
+ "lambda_y": 1.0,
+ "cov": "diag",
+ "kappa": 50.0,
+ "alpha": 1.0,
+ "lam": 16.0,
+ "graph_knn": 5,
+ "graph_rho": 0.05,
+ "empirical_bayes": false,
+ "eb_alpha_grid": [
+  0.25,
+  0.5,
+  1.0,
+  2.0,
+  4.0,
+  8.0
+ ],
+ "eb_lam_grid": [
+  0.0,
+  1.0,
+  2.0,
+  4.0,
+  8.0,
+  16.0,
+  32.0
+ ],
+ "eb_min_present": 3,
+ "presence": true,
+ "dirichlet_pseudo_count": 0.5,
+ "sample_knn": 3,
+ "lambda_laplacian": 1.0,
+ "n_outer": 10,
+ "n_inner_z": 3,
+ "normalize_prototypes": false,
+ "forgetting": 1.0,
+ "linear_solver": "auto",
+ "cg_iters": 30,
+ "eps": 1e-08
+}

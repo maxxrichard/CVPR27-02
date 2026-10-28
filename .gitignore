@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+features/
+results/raw/*.json
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.brf
+paper/*.synctex.gz
