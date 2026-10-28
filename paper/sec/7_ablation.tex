@@ -1,13 +1,13 @@
 \section{Ablation Studies}
 \label{sec:ablation}
-Ablations use the low and the all-classes settings on the eleven datasets with CLIP ViT-B/16; grey entries are placeholders.
+Ablations use the low and all-classes settings on the eleven datasets; grey entries are placeholders.
 
 \paragraph{Components.}
 \Cref{tab:components} adds the components one at a time. Without anchor, coupling or presence the mixture reaches 43.3 in the low setting; the presence model alone raises it to 55.8, the anchor term to 69.1, both together to 69.6, and the graph coupling adds 1.1 points on top (70.7), the margin that distinguishes \method from anchor-only methods. The inherited sample graph contributes 0.3 points in the low setting but 1.5 with all classes, where the anchor and the coupling change the result by at most 0.4, consistent with \cref{prop:special}.
 
 \begin{table}[t]
   \centering\footnotesize
-  \caption{Component ablation, top-1 accuracy (\%). $\pi$: presence; $\alpha$: anchor; $\lambda$: graph coupling; EB: empirical Bayes; $W_s$: sample graph.}
+  \caption{Component ablation, top-1 accuracy (\%): $\pi$ presence, $\alpha$ anchor, $\lambda$ graph coupling, EB empirical Bayes, $W_s$ sample graph.}
   \label{tab:components}
   \setlength{\tabcolsep}{4pt}
   \begin{tabular}{ccccc@{\hskip 8pt}cc}
@@ -28,7 +28,7 @@ Ablations use the low and the all-classes settings on the eleven datasets with C
 \end{table}
 
 \paragraph{Prior and graph.}
-We vary $\alpha$, $\lambda$ and the number of neighbours $m$, and replace the text kNN graph by a complete graph and by a degree-matched random graph (table and sensitivity curves in the supplementary material). Accuracy varies by at most 0.6 points for $\lambda$ between 1 and 16 and by 0.3 for $m$ between 3 and 10, so the pooling strength is not a sensitive hyper-parameter; removing the anchor ($\alpha=0$) costs 1.7 points and removing the coupling ($\lambda=0$) 1.6. The random graph (69.2) performs almost exactly like no coupling (69.1), and the complete graph (68.8) is below it, so pooling helps only when it follows the semantic neighbourhoods; this is the control that Hypothesis~\ref{hyp:smooth} requires. Likelihood and optimisation variants and the measured cost (\ph{9} ms per batch of 64 ImageNet images against \ph{7} ms for StatA) are given in the supplementary material.
+We vary $\alpha$, $\lambda$ and the number of neighbours $m$, and replace the text kNN graph by a complete graph and by a degree-matched random graph (table and sensitivity curves in the supplementary material). Accuracy varies by at most 0.6 points for $\lambda$ between 1 and 16 and by 0.3 for $m$ between 3 and 10; removing the anchor ($\alpha=0$) costs 1.7 points and removing the coupling ($\lambda=0$) 1.6. The random graph (69.2) performs like no coupling (69.1) and the complete graph (68.8) is below it, so pooling helps only when it follows the semantic neighbourhoods, the control Hypothesis~\ref{hyp:smooth} requires. Likelihood and optimisation variants and the measured cost (\ph{9} ms per batch of 64 ImageNet images against \ph{7} ms for StatA) are in the supplementary material.
 
 
 

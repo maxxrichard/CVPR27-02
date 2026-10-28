@@ -116,7 +116,7 @@ def per_dataset():
     per = sorted(jload(d, "perdataset_low_*.json"), key=lambda r: r["dataset"])
     if not per:
         return
-    fig, a = plt.subplots(figsize=(SINGLE, 1.65))
+    fig, a = plt.subplots(figsize=(SINGLE, 1.5))
     names = [r["dataset"].replace("_", " ").replace("oxford ", "").replace("stanford ", "") for r in per]
     xs = np.arange(len(per)); w = 0.27
     a.bar(xs - w, [r["zero_shot"] for r in per], w, color=METHOD_COLOR["zero_shot"], label="CLIP zero-shot")
@@ -133,7 +133,7 @@ def absent_mass():
     mass = sorted(jload(d, "absentmass_keff*.json"), key=lambda r: r["keff"])
     if not mass:
         return
-    fig, b = plt.subplots(figsize=(SINGLE, 1.25))
+    fig, b = plt.subplots(figsize=(SINGLE, 1.15))
     ks = [r["keff"] for r in mass]
     for m in ["zero_shot", "stata", "graft"]:
         b.plot(ks, [r[m] for r in mass], marker="o", ms=3.5, color=METHOD_COLOR[m], label=METHOD_NAME[m])

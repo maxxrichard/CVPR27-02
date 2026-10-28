@@ -71,7 +71,7 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 
 \begin{table*}[t]
   \centering\footnotesize
-  \caption{Per-dataset top-1 accuracy (\%) in the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$, 1000 tasks), CLIP ViT-B/16. Grey entries are placeholders. Best in bold, second best underlined.}
+  \caption{Per-dataset top-1 accuracy (\%) in the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$, 1000 tasks), CLIP ViT-B/16; best in bold, second best underlined.}
   \label{tab:perdataset}
   \setlength{\tabcolsep}{3.6pt}
   \input{tables/perdataset_generated}
@@ -86,14 +86,14 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 
 \begin{table}[t]
   \centering\footnotesize
-  \caption{ImageNet and its distribution shifts (V2, Sketch, A, R) in the low setting, top-1 accuracy (\%), CLIP ViT-B/16. Grey entries are placeholders.}
+  \caption{ImageNet and its distribution shifts (V2, Sketch, A, R) in the low setting, top-1 accuracy (\%), CLIP ViT-B/16.}
   \label{tab:shift}
   \setlength{\tabcolsep}{4pt}
   \input{tables/shift_generated}
 \end{table}
 
 \subsection{Qualitative results}
-\Cref{fig:qualgrid} shows test images from batches of the low setting with the ground truth and the predictions of the zero-shot model, StatA and \method. The typical correction is a sample of a present class that the zero-shot model and StatA assign to a semantically close class that is absent from the batch; \method removes the absent class through the presence model and moves the present class's prototype towards its images, so the sample is recovered. \Cref{fig:absent} quantifies this on ImageNet batches of 64: the zero-shot model assigns 31\% of its posterior mass to classes that are not in the batch when a single class is present, StatA 11.5\% and \method 4.1\%, and the three curves converge as $K_{\mathrm{eff}}$ grows and the vocabulary is increasingly covered.
+\Cref{fig:qualgrid} shows test images from batches of the low setting with the ground truth and the predictions of the zero-shot model, StatA and \method. The typical correction is a sample of a present class that the zero-shot model and StatA assign to a semantically close class absent from the batch; \method removes that class through the presence model and moves the present class's prototype towards its images. \Cref{fig:absent} quantifies this on ImageNet batches of 64: the zero-shot model assigns 31\% of its posterior mass to classes that are not in the batch when a single class is present, StatA 11.5\% and \method 4.1\%, and the three curves converge as $K_{\mathrm{eff}}$ grows and the vocabulary is increasingly covered.
 
 \begin{figure}[t]
   \centering
