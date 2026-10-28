@@ -1,0 +1,7 @@
+{
+ "features": "ucf101__ViT-B-16.pt",
+ "ratio": 0.35,
+ "random_std": 0.03,
+ "global_fraction": 0.51,
+ "placeholder": true
+}

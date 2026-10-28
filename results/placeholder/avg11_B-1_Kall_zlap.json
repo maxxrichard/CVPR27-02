@@ -1,0 +1,9 @@
+{
+ "method": "zlap",
+ "batch_size": -1,
+ "setting": "all",
+ "acc_mean": 66.4,
+ "acc_std": null,
+ "source": "reported",
+ "placeholder": false
+}

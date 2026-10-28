@@ -8,7 +8,7 @@ Two recent studies temper the enthusiasm. Zanella \etal~\cite{zanella2025stata} 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/fig3_concept.pdf}
-  \caption{\textbf{Why realistic batches break per-class adaptation (conceptual).} Two classes (A, B) are present and class C is absent, while all image embeddings are shifted from their text anchors. (a) Fitting each prototype to its assigned samples lets the absent class C capture samples of B. (b) Anchor-only shrinkage leaves C at its biased anchor and ignores the shared shift for rare classes. (c) \method pools the displacement field over the semantic class graph, so C inherits the displacement of its neighbour B, and the class-presence model removes C from the competition.}
+  \caption{\textbf{Per-class adaptation on a realistic batch (conceptual).} Classes A and B are present, C is absent, and all images are shifted from their anchors. (a) Per-class fitting lets C capture samples of B. (b) Anchor-only shrinkage leaves C at its biased anchor. (c) \method lets C inherit B's displacement and removes it through the presence model.}
   \label{fig:concept}
 \end{figure}
 

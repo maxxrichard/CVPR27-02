@@ -1,0 +1,9 @@
+{
+ "method": "moon",
+ "batch_size": 64,
+ "setting": "2-10",
+ "acc_mean": 70.0,
+ "acc_std": 0.4,
+ "source": "placeholder",
+ "placeholder": true
+}

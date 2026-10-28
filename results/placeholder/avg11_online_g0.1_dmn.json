@@ -1,0 +1,7 @@
+{
+ "method": "dmn",
+ "gamma": "0.1",
+ "acc_mean": 67.2,
+ "source": "reported",
+ "placeholder": false
+}

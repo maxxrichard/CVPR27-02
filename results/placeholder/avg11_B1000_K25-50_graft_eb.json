@@ -1,0 +1,9 @@
+{
+ "method": "graft_eb",
+ "batch_size": 1000,
+ "setting": "25-50",
+ "acc_mean": 70.6,
+ "acc_std": 0.5,
+ "source": "placeholder",
+ "placeholder": true
+}

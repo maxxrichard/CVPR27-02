@@ -1,0 +1,8 @@
+{
+ "method": "moon",
+ "gamma": "0.001",
+ "acc_mean": 70.0,
+ "acc_std": 0.6,
+ "source": "placeholder",
+ "placeholder": true
+}

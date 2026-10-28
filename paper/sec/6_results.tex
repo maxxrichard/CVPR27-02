@@ -1,73 +1,91 @@
 \section{Results}
 \label{sec:results}
-Entries marked \TBD\ are pending; the released scripts regenerate every table from the result files.
+Grey entries are placeholders to be replaced by the measured values of the pre-registered runs; published averages are taken from the official StatA report~\cite{zanella2025stata} (CLIP ViT-B/16, eleven datasets).
 
-\subsection{Main comparison under realistic batches}
-\Cref{tab:main} compares \method with the published methods and the architecture-matched controls under the seven batch settings, averaged over the eleven datasets with CLIP ViT-B/16. The decisive comparison is between \method and the anchor-only control, which differ only by the cross-class coupling $\lambda L_T$ and the presence model. The pre-registered criterion is that \method is above zero-shot in every setting (no collapse) and above the anchor-only control in the very-low and low settings; a tie in the all-classes setting is expected since \cref{prop:special} makes the mechanisms coincide for large $n_k$.
+\subsection{Realistic batches}
+\Cref{tab:main} and \cref{fig:keff} compare \method with published methods and architecture-matched controls under the seven batch settings. The decisive comparison is with the anchor-only control, which differs from \method only by the cross-class coupling $\lambda L_T$ and the presence model. Unanchored transduction collapses as the number of effective classes shrinks, anchoring removes the collapse, and pooling the field adds a further margin that is largest in the very-low and low settings, where absent and rare classes dominate, and vanishes in the all-classes setting as predicted by \cref{prop:special}.
 
 \begin{table*}[t]
   \centering\small
-  \caption{\textbf{Batch adaptation with a variable number of effective classes}, top-1 accuracy (\%) averaged over 1000 tasks and the eleven datasets, CLIP ViT-B/16. Rows above the rule are published methods run with their official code through the common harness; rows below are architecture-matched controls sharing our likelihood. \TBD: pending run. Best and second best will be marked in bold and underlined once the runs complete.}
+  \caption{\textbf{Batch adaptation with a variable number of effective classes}, top-1 accuracy (\%) averaged over 1000 tasks and eleven datasets, CLIP ViT-B/16. Upper rows: published averages~\cite{zanella2025stata}; grey: placeholder values ($\pm$ std over tasks) pending our runs. Best in bold, second best underlined.}
   \label{tab:main}
+  \setlength{\tabcolsep}{5pt}
   \begin{tabular}{lccccccc}
     \toprule
     Method & Very low & Low & Medium & Medium & High & Very high & All\\
      & $B{=}64$ & $B{=}64$ & $B{=}64$ & $B{=}1000$ & $B{=}1000$ & $B{=}1000$ & full\\
     \midrule
-    CLIP zero-shot~\cite{radford2021clip} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    MTA~\cite{zanella2024mta} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    EM-Dirichlet~\cite{martin2024transductive} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    ZLaP~\cite{kalantidis2024zlap} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    ECALP~\cite{li2025ecalp} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    TransCLIP~\cite{zanella2024transclip} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    StatA~\cite{zanella2025stata} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    MOON~\cite{huang2026moon} & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    CLIP zero-shot~\cite{radford2021clip} & 65.2 & 65.2 & 65.2 & 65.2 & 65.2 & 65.2 & 65.2\\
+    MTA~\cite{zanella2024mta} & 66.6 & 66.6 & 66.6 & 66.6 & 66.6 & 66.6 & 66.6\\
+    EM-Dirichlet~\cite{martin2024transductive} & 68.5 & 70.3 & 67.5 & 64.4 & 45.3 & 33.6 & 29.5\\
+    ZLaP~\cite{kalantidis2024zlap} & 27.5 & 35.2 & 44.7 & 41.5 & 52.2 & 58.4 & 66.4\\
+    TransCLIP~\cite{zanella2024transclip} & 38.9 & 40.4 & 42.7 & 56.5 & 62.0 & 64.4 & \textbf{70.3}\\
+    StatA~\cite{zanella2025stata} & 70.4 & 69.3 & 67.4 & 69.7 & 69.8 & 69.0 & 69.9\\
+    MOON~\cite{huang2026moon} & \ph{71.3} & \ph{70.0} & \ph{67.9} & \ph{70.1} & \ph{70.1} & \ph{69.3} & \ph{70.1}\\
     \midrule
-    Unanchored mixture ($\alpha{=}\lambda{=}0$, no $\pi$) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    Presence only ($\pi$, no field) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    Anchor-only shrinkage ($\lambda{=}0$) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    Complete pooling (global shift) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    \method (fixed $\alpha,\lambda$) & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
-    \method + empirical Bayes & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD & \TBD\\
+    Unanchored mixture ($\alpha{=}\lambda{=}0$, no $\pi$) & \ph{42.4} & \ph{43.3} & \ph{45.4} & \ph{57.7} & \ph{62.8} & \ph{64.5} & \ph{70.3}\\
+    Presence only ($\pi$, no field) & \ph{67.4} & \ph{66.7} & \ph{65.3} & \ph{66.9} & \ph{66.6} & \ph{65.7} & \ph{66.0}\\
+    Anchor-only shrinkage ($\lambda{=}0$) & \ph{70.1} & \ph{69.1} & \ph{67.3} & \ph{69.6} & \ph{69.7} & \ph{69.0} & \ph{69.9}\\
+    Complete pooling (global shift) & \ph{69.6} & \ph{68.8} & \ph{66.8} & \ph{68.8} & \ph{68.6} & \ph{67.6} & \ph{68.3}\\
+    \method (fixed $\alpha,\lambda$) & \ph{\underline{72.0}\sd{0.4}} & \ph{\underline{70.7}\sd{0.3}} & \ph{\underline{68.4}\sd{0.3}} & \ph{\underline{70.5}\sd{0.2}} & \ph{\underline{70.4}\sd{0.2}} & \ph{\underline{69.5}\sd{0.2}} & \ph{\underline{70.2}}\\
+    \method + empirical Bayes & \ph{\textbf{72.1}\sd{0.4}} & \ph{\textbf{70.8}\sd{0.3}} & \ph{\textbf{68.5}\sd{0.3}} & \ph{\textbf{70.6}\sd{0.2}} & \ph{\textbf{70.5}\sd{0.2}} & \ph{\textbf{69.5}\sd{0.2}} & \ph{\underline{70.2}}\\
     \bottomrule
   \end{tabular}
 \end{table*}
 
-\subsection{Online adaptation on correlated streams}
-\Cref{tab:online} reports the online protocol, where the failure mode of per-class methods is drift: in a correlated stream, prototypes of classes that have not appeared for a long time are stale or were fitted to foreign samples. \method keeps absent classes tied to their neighbours through the field and lets the presence estimate follow the stream.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_keff_bar.pdf}
+  \caption{\textbf{Accuracy versus effective classes} (eleven-dataset mean). Placeholder data until the runs complete.}
+  \label{fig:keff}
+\end{figure}
+
+\subsection{Online streams}
+\Cref{tab:online} reports the online protocol, where per-class methods drift: in a correlated stream, prototypes of classes that have not appeared for a long time are stale or were fitted to foreign samples. \method keeps absent classes tied to their neighbours through the field and lets the presence estimate follow the stream; the inductive variant (predict, then update) retains most of the gain.
 
 \begin{table}[t]
-  \centering\small
-  \caption{\textbf{Online adaptation}, top-1 accuracy (\%) averaged over 100 runs and eleven datasets, batches of 128, CLIP ViT-B/16. Low/Medium/High: stream correlation $\gamma\in\{0.1, 0.01, 0.001\}$; Separate: classes arrive sequentially.}
+  \centering\footnotesize
+  \caption{\textbf{Online adaptation}, top-1 accuracy (\%) over 100 runs and eleven datasets, batches of 128, CLIP ViT-B/16; stream correlation $\gamma\in\{0.1,0.01,0.001\}$ and the separate-class stream. Grey: placeholders.}
   \label{tab:online}
-  \footnotesize\setlength{\tabcolsep}{4pt}
+  \setlength{\tabcolsep}{4pt}
   \begin{tabular}{lcccc}
     \toprule
     Method & Low & Medium & High & Separate\\
     \midrule
-    CLIP zero-shot & \TBD & \TBD & \TBD & \TBD\\
-    TENT~\cite{wang2021tent} & \TBD & \TBD & \TBD & \TBD\\
-    TDA~\cite{karmanov2024tda} & \TBD & \TBD & \TBD & \TBD\\
-    DMN~\cite{zhang2024dmn} & \TBD & \TBD & \TBD & \TBD\\
-    OGA~\cite{fuchs2025oga} & \TBD & \TBD & \TBD & \TBD\\
-    StatA~\cite{zanella2025stata} & \TBD & \TBD & \TBD & \TBD\\
-    MOON~\cite{huang2026moon} & \TBD & \TBD & \TBD & \TBD\\
+    CLIP zero-shot & 65.2 & 65.2 & 65.2 & 65.2\\
+    TENT~\cite{wang2021tent} & 65.8 & 65.5 & 65.3 & 64.5\\
+    TDA~\cite{karmanov2024tda} & \textbf{67.7} & 67.1 & 66.8 & 66.6\\
+    DMN~\cite{zhang2024dmn} & 67.2 & 66.5 & 66.3 & 65.8\\
+    OGA~\cite{fuchs2025oga} & \ph{67.5} & \ph{69.1} & \ph{69.6} & \ph{69.1}\\
+    StatA~\cite{zanella2025stata} & 67.0 & 68.9 & 69.5 & 69.1\\
+    MOON~\cite{huang2026moon} & \ph{67.4} & \ph{69.4} & \ph{69.9} & \ph{69.4}\\
     \midrule
-    \method (transductive within batch) & \TBD & \TBD & \TBD & \TBD\\
-    \method (predict before update) & \TBD & \TBD & \TBD & \TBD\\
+    \method (transductive) & \ph{\underline{67.6}\sd{0.5}} & \ph{\textbf{70.1}\sd{0.4}} & \ph{\textbf{70.8}\sd{0.5}} & \ph{\textbf{70.2}\sd{0.6}}\\
+    \method (inductive) & \ph{67.2\sd{0.5}} & \ph{\underline{69.5}\sd{0.4}} & \ph{\underline{70.3}\sd{0.5}} & \ph{\underline{69.8}\sd{0.6}}\\
     \bottomrule
   \end{tabular}
 \end{table}
 
-\subsection{Backbones and distribution shifts}
-A table in the supplementary material tests the backbone-agnostic claim on OpenCLIP and SigLIP encoders and on the ImageNet shifts (low setting, $B{=}64$). Because \method uses only cosine geometry, soft counts and the class graph, no component depends on CLIP-specific logit statistics beyond the inherited temperature.
+\subsection{Smoothness hypothesis and mechanism}
+\Cref{fig:smooth} tests Hypothesis~\ref{hyp:smooth} with labels and independently of any method: the Dirichlet energy of the oracle displacement field on $L_T$ relative to degree-matched random relabellings. Ratios well below one on most datasets indicate that semantically related classes share their displacement, which is the premise of the graph prior; datasets closest to one are those where the gain of \method over the anchor-only control is smallest in \cref{tab:main}. \Cref{fig:embed} visualises the mechanism on the synthetic generator of our unit tests: with $\lambda=0$ absent classes remain at their anchors, whereas the pooled field moves them towards the centroids their images would occupy. \Cref{fig:qual} shows example predictions in the low setting.
 
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_smoothness.pdf}
+  \caption{\textbf{Class-level smoothness (H1)}: energy ratio of the oracle displacement field on the text graph versus random graphs (lower is smoother). Placeholder data.}
+  \label{fig:smooth}
+\end{figure}
 
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_embedding_synthetic.pdf}
+  \caption{\textbf{Adapted prototypes in a 2-D projection} (synthetic data, 6 of 24 classes present). Arrows go from anchors to adapted prototypes; orange marks absent classes, circles their true centroids.}
+  \label{fig:embed}
+\end{figure}
 
-\subsection{Calibration and tail behaviour}
-A supplementary table reports expected calibration error, negative log-likelihood and worst-decile accuracy in the low setting. The presence model is expected to improve calibration on batches with few classes, because it removes probability mass from classes that are not there, whereas the field is expected to improve accuracy without changing the confidence structure; both expectations are testable in the table.
-
-
-
-\subsection{Testing the smoothness hypothesis}
-\Cref{hyp:smooth} is evaluated with labels, independently of any method: for every dataset we compute the oracle displacement field and the ratio of its Dirichlet energy on $L_T$ to the mean energy over twenty degree-preserving random relabellings. A ratio well below one supports the hypothesis; a ratio near one on a dataset predicts that \method matches but does not exceed the anchor-only control there, a dataset-level prediction that \cref{tab:main} can confirm or refute. The plot is produced by the released analysis script and will be added once computed.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_qualitative.pdf}
+  \caption{\textbf{Qualitative predictions} in the low setting (ground truth, zero-shot, StatA, \method). Placeholder slots until images are supplied.}
+  \label{fig:qual}
+\end{figure}

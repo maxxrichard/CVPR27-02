@@ -1,0 +1,7 @@
+{
+ "method": "tda",
+ "gamma": "0.1",
+ "acc_mean": 67.7,
+ "source": "reported",
+ "placeholder": false
+}

@@ -1,0 +1,9 @@
+{
+ "method": "label_shift_only",
+ "batch_size": 64,
+ "setting": "1-4",
+ "acc_mean": 67.5,
+ "acc_std": 0.3,
+ "source": "placeholder",
+ "placeholder": true
+}

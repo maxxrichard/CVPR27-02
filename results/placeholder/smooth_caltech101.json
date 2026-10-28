@@ -1,0 +1,7 @@
+{
+ "features": "caltech101__ViT-B-16.pt",
+ "ratio": 0.37,
+ "random_std": 0.03,
+ "global_fraction": 0.52,
+ "placeholder": true
+}

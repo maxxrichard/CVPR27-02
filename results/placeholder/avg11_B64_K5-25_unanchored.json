@@ -1,0 +1,9 @@
+{
+ "method": "unanchored",
+ "batch_size": 64,
+ "setting": "5-25",
+ "acc_mean": 45.4,
+ "acc_std": 0.5,
+ "source": "placeholder",
+ "placeholder": true
+}

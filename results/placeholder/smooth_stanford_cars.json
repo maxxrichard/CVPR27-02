@@ -1,0 +1,7 @@
+{
+ "features": "stanford_cars__ViT-B-16.pt",
+ "ratio": 0.74,
+ "random_std": 0.03,
+ "global_fraction": 0.43,
+ "placeholder": true
+}

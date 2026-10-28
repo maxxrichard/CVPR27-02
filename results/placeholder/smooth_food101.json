@@ -1,0 +1,7 @@
+{
+ "features": "food101__ViT-B-16.pt",
+ "ratio": 0.31,
+ "random_std": 0.03,
+ "global_fraction": 0.54,
+ "placeholder": true
+}

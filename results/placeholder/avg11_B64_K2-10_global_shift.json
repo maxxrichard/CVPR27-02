@@ -1,0 +1,9 @@
+{
+ "method": "global_shift",
+ "batch_size": 64,
+ "setting": "2-10",
+ "acc_mean": 68.7,
+ "acc_std": 0.3,
+ "source": "placeholder",
+ "placeholder": true
+}

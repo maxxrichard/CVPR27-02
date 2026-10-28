@@ -1,0 +1,8 @@
+{
+ "method": "oga",
+ "gamma": "-1",
+ "acc_mean": 69.1,
+ "acc_std": 0.4,
+ "source": "placeholder",
+ "placeholder": true
+}

@@ -1,0 +1,9 @@
+{
+ "method": "transclip",
+ "batch_size": 64,
+ "setting": "2-10",
+ "acc_mean": 40.4,
+ "acc_std": null,
+ "source": "reported",
+ "placeholder": false
+}

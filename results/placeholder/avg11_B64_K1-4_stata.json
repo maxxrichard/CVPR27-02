@@ -1,0 +1,9 @@
+{
+ "method": "stata",
+ "batch_size": 64,
+ "setting": "1-4",
+ "acc_mean": 70.4,
+ "acc_std": null,
+ "source": "reported",
+ "placeholder": false
+}

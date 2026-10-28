@@ -1,0 +1,8 @@
+{
+ "method": "graft",
+ "gamma": "0.001",
+ "acc_mean": 70.9,
+ "acc_std": 0.4,
+ "source": "placeholder",
+ "placeholder": true
+}

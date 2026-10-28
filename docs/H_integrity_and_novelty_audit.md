@@ -47,7 +47,11 @@ on a synthetic smooth field; online equals batch on one batch; stream runs; EB s
 synthetic field; determinism; sampler protocol properties; metrics; adapter shapes. LaTeX compiles.
 
 ## What remains unverified
-* Every benchmark number (all tables are TBD). No dataset was downloaded and no VLM was run in this session, by
+* Every benchmark number for GRAFT, MOON, OGA and the controls. At the authors' request the manuscript tables and
+  plots now contain **placeholder values** (grey entries, watermarked plots, produced by
+  `scripts/make_placeholder_results.py`) so that layout and pipeline can be exercised; they are synthetic, not
+  measured, and must be replaced before any use. Baseline numbers for CLIP, MTA, EM-Dirichlet, ZLaP, TransCLIP,
+  StatA, TENT, TDA and DMN are the published 11-dataset averages from the official StatA README. No dataset was downloaded and no VLM was run in this session, by
   the user's instruction.
 * H1 on real data (whether oracle displacement fields are smooth on the text graph).
 * Whether EB improves over fixed strengths on real data.

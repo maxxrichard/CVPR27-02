@@ -1,0 +1,7 @@
+{
+ "method": "stata",
+ "gamma": "0.001",
+ "acc_mean": 69.5,
+ "source": "reported",
+ "placeholder": false
+}

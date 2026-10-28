@@ -1,0 +1,7 @@
+{
+ "param": "alpha",
+ "value": 0.25,
+ "acc_mean": 70.2,
+ "acc_std": 0.3,
+ "placeholder": true
+}

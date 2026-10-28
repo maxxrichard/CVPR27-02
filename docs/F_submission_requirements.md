@@ -12,7 +12,7 @@ Items marked (unverified) must be re-checked on cvpr.thecvf.com before submissio
 | Papers exceeding the limit, not anonymised, not using the template, or lacking the LLM statement are rejected without review | from official CFP snippet |
 | Submission through OpenReview; up-to-date OpenReview profiles for all co-authors; at most 25 papers per author | from official CFP snippet |
 | Exact wording / placement of the LLM Usage Statement | **unverified**: one snippet says mandatory, another says the LLM policy is "being finalised"; the manuscript includes a statement after the references |
-| LaTeX template: official author kit (github.com/cvpr-org/author-kit); the CVPR 2027 kit was not yet tagged at the time of writing; the latest master (commit 291758547e92, 27 May 2026, CVPR 2026 version) is used with `\confYear{2027}` | cvpr.sty, ieeenat_fullname.bst unmodified |
+| LaTeX template: official CVPR 2027 author kit (author-kit-CVPR2027-v1-latex.zip, supplied by the authors); it drops the paper-ID header and the `cuted` strip; the framework figure is a `figure*` | cvpr.sty, ieeenat_fullname.bst unmodified |
 | Review version: `\usepackage[review]{cvpr}`, line numbers, anonymous author block | done |
 | Dual submission / arXiv policy | **unverified** for 2027 |
 

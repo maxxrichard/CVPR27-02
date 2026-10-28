@@ -1,0 +1,9 @@
+{
+ "method": "mta",
+ "batch_size": 64,
+ "setting": "5-25",
+ "acc_mean": 66.6,
+ "acc_std": null,
+ "source": "reported",
+ "placeholder": false
+}

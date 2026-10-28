@@ -1,0 +1,7 @@
+{
+ "features": "dtd__ViT-B-16.pt",
+ "ratio": 0.65,
+ "random_std": 0.03,
+ "global_fraction": 0.7,
+ "placeholder": true
+}

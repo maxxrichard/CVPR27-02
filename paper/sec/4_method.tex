@@ -1,12 +1,12 @@
 \section{Method}
 \label{sec:method}
 
-\begin{strip}
+\begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/fig1_framework.pdf}
-  \captionof{figure}{\textbf{Overview of \method.} Frozen encoders produce unit-norm image features $X$ and text anchors $T$ (grey: frozen or inherited components; orange: this work). The text anchors define the zero-shot prior $\hat{y}$ and the semantic class graph $L_T$. Inference alternates a closed-form E-step over assignments $z$ with closed-form M-steps for the class proportions $\pi$ (presence), the graph-pooled displacement field $D$ and the shared covariance. The adapted prototypes are $\mu = T + D$; the posterior $z$ is the prediction. No gradient is computed and no parameter of the VLM is changed. In the online setting the sufficient statistics $(n, E, q)$ persist across batches.}
+  \caption{\textbf{Overview of \method.} Frozen encoders give features $X$ and anchors $T$ (grey: frozen or inherited; orange: this work). The anchors define the zero-shot prior $\hat{y}$ and the class graph $L_T$. Closed-form block updates alternate the E-step over $z$ with M-steps for the presence $\pi$, the graph-pooled displacement field $D$ and the shared covariance; $\mu = T + D$ are the adapted prototypes and $z$ the prediction.}
   \label{fig:framework}
-\end{strip}
+\end{figure*}
 
 \subsection{Framework overview}
 \method keeps the generative view of transduction~\cite{zanella2024transclip,zanella2025stata} but changes the object that is adapted: instead of $K$ independent prototypes it estimates a \emph{displacement field} $D\in\R^{K\times d}$ anchored at the text embeddings, $\mu_k = t_k + d_k$, with a prior that couples semantically related classes, together with the class proportions $\pi\in\Delta^K$ and a covariance shared by all classes. \Cref{fig:framework} shows the data flow: frozen encoders, the inherited sample graph $W_s$, the new class graph $L_T$, and a block-coordinate inference whose every step is closed form.
@@ -37,7 +37,7 @@ with $\bar{\sigma}^2 = \tfrac{1}{d}\sum_j\sigma_j^2$. The term $\alpha I_K$ pull
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/fig2_module.pdf}
-  \caption{\textbf{The graph-pooled displacement field} on a toy class graph (node size: soft count $n_k$). (a) Empirical displacements are noisy for rare classes and undefined for absent ones. (b) Independent shrinkage ($\lambda=0$) damps rare classes and leaves absent classes at their anchors. (c) With $\lambda>0$, \cref{eq:dsolve} transfers the displacement of well-observed classes along the graph; absent classes receive the harmonic extension of their neighbours (\cref{prop:absent}).}
+  \caption{\textbf{Graph-pooled displacement field} on a toy class graph (node size: $n_k$). (a) Empirical displacements. (b) Independent shrinkage ($\lambda=0$) leaves absent classes at their anchors. (c) \cref{eq:dsolve} transfers displacements along the graph (\cref{prop:absent}).}
   \label{fig:module}
 \end{figure}
 

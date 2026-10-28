@@ -1,0 +1,7 @@
+{
+ "param": "knn",
+ "value": 10,
+ "acc_mean": 70.5,
+ "acc_std": 0.3,
+ "placeholder": true
+}

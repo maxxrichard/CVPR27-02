@@ -1,0 +1,9 @@
+{
+ "method": "zero_shot",
+ "batch_size": 64,
+ "setting": "1-4",
+ "acc_mean": 65.2,
+ "acc_std": null,
+ "source": "reported",
+ "placeholder": false
+}

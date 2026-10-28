@@ -1,0 +1,7 @@
+{
+ "method": "tent",
+ "gamma": "0.01",
+ "acc_mean": 65.5,
+ "source": "reported",
+ "placeholder": false
+}

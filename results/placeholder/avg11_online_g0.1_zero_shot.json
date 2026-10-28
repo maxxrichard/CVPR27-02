@@ -1,0 +1,7 @@
+{
+ "method": "zero_shot",
+ "gamma": "0.1",
+ "acc_mean": 65.2,
+ "source": "reported",
+ "placeholder": false
+}

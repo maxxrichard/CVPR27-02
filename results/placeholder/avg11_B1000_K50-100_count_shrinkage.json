@@ -1,0 +1,9 @@
+{
+ "method": "count_shrinkage",
+ "batch_size": 1000,
+ "setting": "50-100",
+ "acc_mean": 68.9,
+ "acc_std": 0.3,
+ "source": "placeholder",
+ "placeholder": true
+}

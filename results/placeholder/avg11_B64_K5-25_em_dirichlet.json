@@ -1,0 +1,9 @@
+{
+ "method": "em_dirichlet",
+ "batch_size": 64,
+ "setting": "5-25",
+ "acc_mean": 67.5,
+ "acc_std": null,
+ "source": "reported",
+ "placeholder": false
+}

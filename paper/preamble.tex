@@ -1,6 +1,5 @@
 %% Additional packages used by the manuscript (the official cvpr.sty already loads amsmath, amssymb,
 %% booktabs, graphicx, xcolor, natbib, caption and subcaption).  cvpr.sty is NOT modified.
-\usepackage{cuted}      % two-column strip for the framework figure
 \usepackage{amsthm}
 \usepackage{multirow}
 \usepackage{algorithm}
@@ -9,6 +8,9 @@
 \usepackage{bm}
 \newcommand{\method}{GRAFT\xspace}
 \newcommand{\TBD}{\textcolor{gray}{TBD}}
+% \ph{x}: PLACEHOLDER number (grey) to be replaced by a measured value before submission
+\newcommand{\ph}[1]{\textcolor{gray}{#1}}
+\newcommand{\sd}[1]{{\scriptsize$\pm$#1}}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator{\tr}{tr}

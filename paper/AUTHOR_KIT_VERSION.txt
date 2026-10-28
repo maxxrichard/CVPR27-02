@@ -1,1 +1,1 @@
-291758547e923160eb4d37079b7b9f0dfce82355 Wed May 27 18:26:46 2026 -0700
+Official CVPR 2027 author kit, author-kit-CVPR2027-v1-latex.zip (uploaded by the authors); cvpr.sty and ieeenat_fullname.bst unmodified.

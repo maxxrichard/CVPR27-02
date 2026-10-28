@@ -1,0 +1,8 @@
+{
+ "method": "graft_inductive",
+ "gamma": "0.001",
+ "acc_mean": 70.3,
+ "acc_std": 0.4,
+ "source": "placeholder",
+ "placeholder": true
+}
