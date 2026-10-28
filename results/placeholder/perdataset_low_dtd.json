@@ -2,9 +2,14 @@
  "dataset": "dtd",
  "setting": "B64_K2-10",
  "zero_shot": 44.4,
- "stata": 50.0,
+ "mta": 47.0,
+ "em_dirichlet": 50.6,
+ "zlap": 26.6,
+ "transclip": 24.2,
+ "stata": 50.9,
+ "moon": 51.6,
  "graft": 52.3,
- "graft_std": 0.3,
- "stata_std": 0.2,
+ "graft_std": 0.4,
+ "stata_std": 0.3,
  "placeholder": true
 }

@@ -110,30 +110,62 @@ def embedding_view():
     save(fig, "plot_embedding_synthetic.pdf")
 
 
-def qualitative():
-    """(a) per-dataset accuracy in the low setting, zero-shot vs StatA vs GRAFT; (b) posterior mass assigned to
-    absent classes versus the number of effective classes (ImageNet, B = 64)."""
+def per_dataset():
+    """Per-dataset accuracy in the low setting: zero-shot vs StatA vs GRAFT (grouped bars, single column)."""
     d, ph = src()
-    per = sorted(jload(d, "perdataset_low_*.json"), key=lambda r: r["dataset"]); mass = sorted(jload(d, "absentmass_keff*.json"), key=lambda r: r["keff"])
-    if not per or not mass:
+    per = sorted(jload(d, "perdataset_low_*.json"), key=lambda r: r["dataset"])
+    if not per:
         return
-    fig, (a, b) = plt.subplots(1, 2, figsize=(DOUBLE, 1.9), gridspec_kw={"width_ratios": [2.2, 1]})
+    fig, a = plt.subplots(figsize=(SINGLE, 1.65))
     names = [r["dataset"].replace("_", " ").replace("oxford ", "").replace("stanford ", "") for r in per]
-    xs = np.arange(len(per)); w = 0.26
+    xs = np.arange(len(per)); w = 0.27
     a.bar(xs - w, [r["zero_shot"] for r in per], w, color=METHOD_COLOR["zero_shot"], label="CLIP zero-shot")
     a.bar(xs, [r["stata"] for r in per], w, yerr=[r.get("stata_std", 0) for r in per], color=METHOD_COLOR["stata"], label="StatA", error_kw=dict(lw=0.5, capsize=1))
     a.bar(xs + w, [r["graft"] for r in per], w, yerr=[r.get("graft_std", 0) for r in per], color=METHOD_COLOR["graft"], label="GRAFT", error_kw=dict(lw=0.5, capsize=1))
-    a.set_xticks(xs); a.set_xticklabels(names, rotation=35, ha="right", fontsize=6); a.set_ylabel("Top-1 accuracy (%)"); a.set_ylim(0, 100)
-    a.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.02), handlelength=1.0); a.set_ylim(0, 112); a.set_yticks([0, 25, 50, 75, 100]); panel_label(a, "a", x=-0.07)
+    a.set_xticks(xs); a.set_xticklabels(names, rotation=35, ha="right", fontsize=6); a.set_ylabel("Top-1 accuracy (%)")
+    a.set_ylim(0, 112); a.set_yticks([0, 25, 50, 75, 100]); a.legend(ncol=3, loc="upper center", bbox_to_anchor=(0.5, 1.03), handlelength=1.0)
+    watermark(fig, ph); save(fig, "plot_perdataset.pdf")
+
+
+def absent_mass():
+    """Posterior mass assigned to absent classes versus the number of effective classes (ImageNet, B = 64)."""
+    d, ph = src()
+    mass = sorted(jload(d, "absentmass_keff*.json"), key=lambda r: r["keff"])
+    if not mass:
+        return
+    fig, b = plt.subplots(figsize=(SINGLE, 1.25))
     ks = [r["keff"] for r in mass]
-    for m, key in [("zero_shot", "zero_shot"), ("stata", "stata"), ("graft", "graft")]:
-        b.plot(ks, [r[key] for r in mass], marker="o", ms=3.5, color=METHOD_COLOR[m], label=METHOD_NAME[m])
+    for m in ["zero_shot", "stata", "graft"]:
+        b.plot(ks, [r[m] for r in mass], marker="o", ms=3.5, color=METHOD_COLOR[m], label=METHOD_NAME[m])
     b.set_xscale("log"); b.set_xticks(ks); b.set_xticklabels([str(k) for k in ks]); b.minorticks_off()
     b.set_xlabel("Effective classes $K_{\\mathrm{eff}}$"); b.set_ylabel("Posterior mass on\nabsent classes (%)"); b.set_ylim(0, 35)
-    b.legend(handlelength=1.4); panel_label(b, "b", x=-0.3)
-    plt.subplots_adjust(wspace=0.35)
-    watermark(fig, ph); save(fig, "plot_qualitative.pdf")
+    b.legend(handlelength=1.4, ncol=3, loc="upper right")
+    watermark(fig, ph); save(fig, "plot_absentmass.pdf")
+
+
+def qualitative_grid(n_rows=2, n_cols=4):
+    """Qualitative predictions: test images with the ground truth and the predictions of zero-shot, StatA and
+    GRAFT.  Real inputs: results/raw/qualitative.json, a list of {image, label, zs, stata, graft}; otherwise
+    placeholder slots.  Correct predictions are typeset in green, wrong ones in vermillion."""
+    f = os.path.join(RAW, "qualitative.json")
+    items = json.load(open(f)) if os.path.exists(f) else None
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(SINGLE, 1.95))
+    ok, bad = OKABE_ITO["green"], OKABE_ITO["vermillion"]
+    for i, ax in enumerate(axes.ravel()):
+        ax.set_xticks([]); ax.set_yticks([])
+        for s_ in ax.spines.values(): s_.set_visible(True); s_.set_linewidth(0.5)
+        if items and i < len(items):
+            it = items[i]; ax.imshow(plt.imread(it["image"]))
+            gt, preds = it["label"], [("ZS", it["zs"]), ("StatA", it["stata"]), ("GRAFT", it["graft"])]
+        else:
+            ax.set_facecolor("#ececec"); ax.text(0.5, 0.5, "image", ha="center", va="center", fontsize=6, color="#9a9a9a", transform=ax.transAxes)
+            gt = "class"; preds = [("ZS", "other"), ("StatA", "other"), ("GRAFT", "class")] if i % 4 != 3 else [("ZS", "other"), ("StatA", "class"), ("GRAFT", "class")]
+        ax.set_title(f"GT: {gt}", fontsize=5.5, pad=2)
+        for j, (m, p) in enumerate(preds):
+            ax.text(0.02, -0.12 - 0.17 * j, f"{m}: {p}", transform=ax.transAxes, fontsize=5, color=ok if p == gt else bad, va="top")
+    plt.subplots_adjust(wspace=0.15, hspace=1.15, top=0.93, bottom=0.2)
+    watermark(fig, items is None); save(fig, "plot_qualitative.pdf")
 
 
 if __name__ == "__main__":
-    keff_lines(); sensitivity(); smoothness(); embedding_view(); qualitative()
+    keff_lines(); sensitivity(); smoothness(); embedding_view(); per_dataset(); absent_mass(); qualitative_grid()

@@ -2,9 +2,14 @@
  "dataset": "oxford_pets",
  "setting": "B64_K2-10",
  "zero_shot": 89.1,
- "stata": 92.9,
- "graft": 95.1,
- "graft_std": 0.5,
- "stata_std": 0.4,
+ "mta": 89.6,
+ "em_dirichlet": 91.0,
+ "zlap": 47.7,
+ "transclip": 48.8,
+ "stata": 90.7,
+ "moon": 91.2,
+ "graft": 91.6,
+ "graft_std": 0.4,
+ "stata_std": 0.3,
  "placeholder": true
 }

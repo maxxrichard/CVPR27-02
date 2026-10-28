@@ -2,9 +2,14 @@
  "dataset": "eurosat",
  "setting": "B64_K2-10",
  "zero_shot": 47.8,
- "stata": 53.4,
- "graft": 54.9,
- "graft_std": 0.5,
- "stata_std": 0.3,
+ "mta": 49.5,
+ "em_dirichlet": 57.3,
+ "zlap": 28.4,
+ "transclip": 32.6,
+ "stata": 52.3,
+ "moon": 52.6,
+ "graft": 53.0,
+ "graft_std": 0.4,
+ "stata_std": 0.4,
  "placeholder": true
 }

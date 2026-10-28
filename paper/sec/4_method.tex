@@ -64,31 +64,14 @@ where the first line is the variational free energy of the mixture with the text
 
 \subsection{Inference}
 \label{sec:inference}
-\Cref{alg:batch} alternates four closed-form blocks. The E-step is the standard mean-field update with the Laplacian term linearised at the current $z$ (a majorise-minimise step~\cite{hunter2004mm,ziko2020laplacianshot,zanella2024transclip}):
+The inference alternates four closed-form blocks (pseudocode in the supplementary material). The E-step is the standard mean-field update with the Laplacian term linearised at the current $z$ (a majorise-minimise step~\cite{hunter2004mm,ziko2020laplacianshot,zanella2024transclip}):
 \begin{equation}
   z_{ik} \propto \pi_k\,\hat{y}_{ik}^{\lambda_y}\exp\Big(\ell_{ik} + \frac{\lambda_L}{2m_s}\big[(W_s + W_s^{\top})z\big]_{ik}\Big),
   \label{eq:estep}
 \end{equation}
 iterated a few times. The M-steps are \cref{eq:pi}, \cref{eq:dsolve} and the shared variance $\sigma_j^2 = \tfrac{1}{N}\sum_{i,k} z_{ik}(x_{ij}-\mu_{kj})^2$. All quantities depend on the data only through the sufficient statistics $n = z^{\top}\mathbf{1}$, $S = z^{\top}X$ and $q = \sum_i x_i^{\odot 2}$, which makes the online variant immediate: statistics are accumulated over the stream with an optional forgetting factor $\varrho$, and the same M-steps are applied after every batch (algorithm in the supplementary material). The prediction for a batch is its posterior $z$ after adaptation, as in the transductive protocol of~\cite{zanella2025stata}; a strictly inductive variant predicts before the statistics are updated.
 
-\begin{algorithm}[t]
-\caption{\method, batch (transductive) inference}
-\label{alg:batch}
-\begin{algorithmic}[1]
-\Require features $X\in\R^{N\times d}$, anchors $T\in\R^{K\times d}$, graph $L_T$, $(\alpha,\lambda)$ or empirical Bayes, $c$, $\kappa$, $\lambda_y$, $\lambda_L$
-\State $\hat{y}\gets\mathrm{softmax}(\tau XT^{\top})$; $z\gets\hat{y}$; $D\gets 0$; $\pi\gets\mathbf{1}/K$; $\sigma^2\gets$ variance of $X$ about $T$ under $\hat{y}$
-\State $W_s\gets$ $m_s$-NN cosine graph of $X$
-\For{$t=1,\dots,T_{\max}$}
-  \State E-step: update $z$ by \cref{eq:estep} ($n_{\mathrm{inner}}$ sweeps)
-  \State $n\gets z^{\top}\mathbf{1}$;\; $\bar{X}\gets N_z^{-1}z^{\top}X$;\; $E\gets\bar{X}-T$ (rows with $n_k=0$ set to $0$)
-  \State $\pi\gets(n+c)/(N+Kc)$ \Comment{presence}
-  \State optionally $(\alpha,\lambda)\gets\argmax$ marginal likelihood of $E$ (\cref{sec:eb})
-  \State $D\gets$ solution of \cref{eq:dsolve} \Comment{graph-pooled field}
-  \State $\sigma_j^2\gets\tfrac{1}{N}\big[q_j - 2\sum_k\mu_{kj}S_{kj} + \sum_k n_k\mu_{kj}^2\big]$ with $\mu=T+D$
-\EndFor
-\State \Return $z$ (posterior), $(D,\pi,\sigma^2)$
-\end{algorithmic}
-\end{algorithm}
+
 
 
 
@@ -103,7 +86,7 @@ which we maximise over a small logarithmic grid at every M-step whenever at leas
 
 \subsection{Analysis}
 \label{sec:analysis}
-All proofs are short and given in the supplementary material; the statements are also verified numerically by the unit tests shipped with the code.
+Proofs are in the supplementary material; every statement is also verified numerically by the unit tests shipped with the code.
 
 \begin{proposition}[Special cases]
 \label{prop:special}
@@ -112,18 +95,17 @@ With $\lambda=0$, \cref{eq:dsolve} gives $d_k = \frac{n_k}{n_k+\alpha s_j}\,e_k$
 
 \begin{proposition}[Absent classes are harmonic extensions]
 \label{prop:absent}
-Let $A=\{k: n_k = 0\}$ and $P$ its complement, and let $Q_\lambda = \alpha I + \lambda L_T$. The solution of \cref{eq:dsolve} satisfies $Q_{\lambda,AA}\,D_A + Q_{\lambda,AP}\,D_P = 0$, so $D_A = -Q_{\lambda,AA}^{-1}Q_{\lambda,AP}D_P$ is the harmonic extension of the present-class field, and $D_P$ solves \cref{eq:dsolve} restricted to $P$ with $Q_\lambda$ replaced by its Kron reduction $Q_\lambda/Q_{\lambda,AA}$~\cite{dorfler2013kron}. Adding absent classes to the vocabulary therefore changes the present-class prototypes only through the effective graph among them, never through data.
+Let $A=\{k: n_k = 0\}$ and $P$ its complement, and let $Q_\lambda = \alpha I + \lambda L_T$. The solution of \cref{eq:dsolve} satisfies $Q_{\lambda,AA}\,D_A + Q_{\lambda,AP}\,D_P = 0$, so $D_A = -Q_{\lambda,AA}^{-1}Q_{\lambda,AP}D_P$ is the harmonic extension of the present-class field, and $D_P$ solves \cref{eq:dsolve} on $P$ with $Q_\lambda$ replaced by its Kron reduction $Q_\lambda/Q_{\lambda,AA}$~\cite{dorfler2013kron}: absent classes change the present-class prototypes only through the effective graph, never through data.
 \end{proposition}
 
 \begin{proposition}[Pooling never increases posterior variance]
 \label{prop:variance}
-Under the model of \cref{sec:field}, the posterior covariance of $d_{:j}$ given $z$ is $\kappa\sigma_j^2\,(N_z + s_j Q_\lambda)^{-1}$. Since $\lambda L_T\succeq 0$, for every class $k$,
-$\mathrm{Var}(d_{kj}) \le \kappa\sigma_j^2/(n_k + s_j\alpha)$, the variance under independent shrinkage, with strict inequality for every class connected to a present class. For an absent class the bound under independent shrinkage is the prior variance $\kappa\sigma_j^2/(s_j\alpha)$, whereas with $\lambda>0$ it is reduced by the neighbours' counts.
+Under the model of \cref{sec:field}, the posterior covariance of $d_{:j}$ given $z$ is $\kappa\sigma_j^2\,(N_z + s_j Q_\lambda)^{-1}$; since $\lambda L_T\succeq 0$, $\mathrm{Var}(d_{kj}) \le \kappa\sigma_j^2/(n_k + s_j\alpha)$ for every class $k$, the variance under independent shrinkage, with strict inequality for every class connected to a present class.
 \end{proposition}
 
 \begin{proposition}[Monotone block updates]
 \label{prop:monotone}
-Each block update of \cref{alg:batch} is the exact minimiser of \cref{eq:objective} over its block when $\lambda_L=0$, so $J$ decreases monotonically and converges; with $\lambda_L>0$ the E-step minimises a majoriser of $J$, as in~\cite{zanella2024transclip}.
+Each block update of the inference in \cref{sec:inference} is the exact minimiser of \cref{eq:objective} over its block when $\lambda_L=0$, so $J$ decreases monotonically and converges; with $\lambda_L>0$ the E-step minimises a majoriser of $J$, as in~\cite{zanella2024transclip}.
 \end{proposition}
 
 None of the propositions guarantees higher accuracy than zero-shot inference; the benefit rests on the following testable hypothesis.
@@ -135,4 +117,4 @@ The oracle displacement field $e^{\star}_k = \E[x\,|\,y=k] - t_k$ has a Dirichle
 
 \subsection{Complexity}
 \label{sec:complexity}
-Per outer iteration the E-step costs $O(NKd + N m_s K)$, the statistics $O(NKd)$, the presence update $O(K)$ and the field $O(n_{\mathrm{cg}}\,K d\,(1+m))$ with conjugate gradients ($O(K^3 + K^2 d)$ exactly). Memory is $O(NK + Kd + K^2)$; the class graph has $O(Km)$ edges and is built once per vocabulary. Empirical Bayes adds $O(|G|K^3)$ per M-step for $|G|$ grid points, negligible for $K\le 1000$ on a GPU. No backward pass is executed and the VLM is untouched after feature extraction.
+Per outer iteration the E-step costs $O(NKd + N m_s K)$ and the field $O(n_{\mathrm{cg}}\,K d\,(1+m))$ with conjugate gradients ($O(K^3 + K^2 d)$ exactly); memory is $O(NK + Kd + K^2)$, the class graph has $O(Km)$ edges and is built once per vocabulary, and empirical Bayes adds $O(|G|K^3)$ per M-step for $|G|$ grid points. No backward pass is executed and the VLM is untouched after feature extraction.

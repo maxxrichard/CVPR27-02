@@ -2,9 +2,14 @@
  "dataset": "food101",
  "setting": "B64_K2-10",
  "zero_shot": 86.1,
- "stata": 88.6,
- "graft": 90.1,
- "graft_std": 0.3,
- "stata_std": 0.3,
+ "mta": 86.8,
+ "em_dirichlet": 88.0,
+ "zlap": 48.4,
+ "transclip": 50.8,
+ "stata": 87.4,
+ "moon": 87.9,
+ "graft": 88.5,
+ "graft_std": 0.4,
+ "stata_std": 0.4,
  "placeholder": true
 }

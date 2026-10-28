@@ -17,7 +17,26 @@ Given $z$, the per-dimension posterior of $d$ is Gaussian with precision $(N_z +
 \paragraph{Proof of \cref{prop:monotone}.}
 With $\lambda_L = 0$ the objective is, in $z$, a sum of $N$ strictly convex functions on the simplex whose minimisers are the softmax in \cref{eq:estep} (standard mean-field argument), in $\pi$ a Dirichlet-regularised multinomial likelihood whose minimiser is \cref{eq:pi}, in $D$ a strictly convex quadratic (above) and in $\sigma^2$ a separable problem whose stationary point is the stated variance. Each block update therefore does not increase $J$, which is bounded below, so $J$ converges. With $\lambda_L>0$ the term $-\frac{\lambda_L}{2m_s}z^{\top}W_s z$ is handled by the linear bound $-z^{\top}W_s z\le -2 z^{\top}W_s z^{(t)} + z^{(t)\top}W_s z^{(t)}$, valid when $W_s$ is positive semi-definite and used as a majoriser otherwise, as in~\cite{ziko2020laplacianshot,zanella2024transclip}. \qed
 
-\section{Online algorithm}
+\section{Batch and online algorithms}
+\begin{algorithm}[h]
+\caption{\method, batch (transductive) inference}
+\label{alg:batch}
+\begin{algorithmic}[1]
+\Require features $X\in\R^{N\times d}$, anchors $T\in\R^{K\times d}$, graph $L_T$, $(\alpha,\lambda)$ or empirical Bayes, $c$, $\kappa$, $\lambda_y$, $\lambda_L$
+\State $\hat{y}\gets\mathrm{softmax}(\tau XT^{\top})$; $z\gets\hat{y}$; $D\gets 0$; $\pi\gets\mathbf{1}/K$; $\sigma^2\gets$ variance of $X$ about $T$ under $\hat{y}$
+\State $W_s\gets$ $m_s$-NN cosine graph of $X$
+\For{$t=1,\dots,T_{\max}$}
+  \State E-step: update $z$ by \cref{eq:estep} ($n_{\mathrm{inner}}$ sweeps)
+  \State $n\gets z^{\top}\mathbf{1}$;\; $\bar{X}\gets N_z^{-1}z^{\top}X$;\; $E\gets\bar{X}-T$ (rows with $n_k=0$ set to $0$)
+  \State $\pi\gets(n+c)/(N+Kc)$ \Comment{presence}
+  \State optionally $(\alpha,\lambda)\gets\argmax$ marginal likelihood of $E$ (\cref{sec:eb})
+  \State $D\gets$ solution of \cref{eq:dsolve} \Comment{graph-pooled field}
+  \State $\sigma_j^2\gets\tfrac{1}{N}\big[q_j - 2\sum_k\mu_{kj}S_{kj} + \sum_k n_k\mu_{kj}^2\big]$ with $\mu=T+D$
+\EndFor
+\State \Return $z$ (posterior), $(D,\pi,\sigma^2)$
+\end{algorithmic}
+\end{algorithm}
+
 \begin{algorithm}[h]
 \caption{\method, online inference on a stream}
 \label{alg:online}
@@ -91,7 +110,34 @@ The batch sampler draws $K_{\mathrm{eff}}$ uniformly in $[k_{\min},k_{\max}]$, s
 \end{figure}
 \noindent With $\lambda=0$ absent classes stay at their anchors, whereas the pooled field moves them towards the centroids their images would occupy.
 
-\section{Sensitivity curves}
+\section{Prior and graph ablation}
+\begin{table}[h]
+  \centering
+  \caption{Prior and graph ablation in the low setting (default: $\alpha{=}1$, $\lambda{=}4$, $m{=}5$, $\rho{=}0.05$). Standard deviations over tasks are 0.3 for every entry.}
+  \label{tab:prior}
+  \footnotesize\setlength{\tabcolsep}{2.5pt}
+  \begin{tabular}{@{}lcccccc@{}}
+    \toprule
+    $\alpha$ & 0 & 0.25 & 1 & 4 & 16 & \\
+    acc. & \ph{69.0} & \ph{70.2} & \ph{\textbf{70.7}} & \ph{70.4} & \ph{69.6} & \\
+    \midrule
+    $\lambda$ & 0 & 1 & 4 & 16 & 64 & $\infty$\\
+    acc. & \ph{69.1} & \ph{70.1} & \ph{\textbf{70.7}} & \ph{70.5} & \ph{69.9} & \ph{68.8}\\
+    \midrule
+    graph & $m{=}3$ & $m{=}5$ & $m{=}10$ & compl. & rand. & \\
+    acc. & \ph{70.4} & \ph{\textbf{70.7}} & \ph{70.5} & \ph{68.8} & \ph{69.2} & \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Smoothness and sensitivity plots}
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_smoothness.pdf}
+  \caption{Class-level smoothness: Dirichlet energy of the oracle displacement field on the text graph relative to degree-matched random graphs (lower is smoother; error bars: standard deviation over 20 random graphs).}
+  \label{fig:smooth}
+\end{figure}
+
 \begin{figure}[h]
   \centering
   \includegraphics[width=\linewidth]{figures/plot_sensitivity.pdf}

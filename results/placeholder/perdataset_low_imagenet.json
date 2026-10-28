@@ -2,9 +2,14 @@
  "dataset": "imagenet",
  "setting": "B64_K2-10",
  "zero_shot": 66.7,
- "stata": 70.3,
- "graft": 72.2,
- "graft_std": 0.2,
- "stata_std": 0.3,
+ "mta": 68.0,
+ "em_dirichlet": 70.2,
+ "zlap": 35.4,
+ "transclip": 43.2,
+ "stata": 71.0,
+ "moon": 71.7,
+ "graft": 72.3,
+ "graft_std": 0.3,
+ "stata_std": 0.5,
  "placeholder": true
 }

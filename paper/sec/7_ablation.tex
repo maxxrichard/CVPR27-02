@@ -1,9 +1,9 @@
 \section{Ablation Studies}
 \label{sec:ablation}
-All ablations use the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$) and the all-classes setting on the eleven datasets with CLIP ViT-B/16; grey entries are placeholders with standard deviations over tasks.
+Ablations use the low and the all-classes settings on the eleven datasets with CLIP ViT-B/16; grey entries are placeholders.
 
 \paragraph{Components.}
-\Cref{tab:components} adds the components one at a time. Without anchor, coupling or presence the mixture reaches 43.3 in the low setting; the presence model alone raises it to 55.8, the anchor term to 69.1, and both together to 69.6. The graph coupling adds 1.1 points on top (70.7), which is the margin that distinguishes \method from anchor-only methods, and empirical Bayes adds a further 0.1. The inherited sample graph contributes 0.3 points in the low setting but 1.5 in the all-classes setting, where neighbouring samples carry most of the structure; conversely, the anchor and the coupling change the all-classes result by at most 0.4, consistent with \cref{prop:special}.
+\Cref{tab:components} adds the components one at a time. Without anchor, coupling or presence the mixture reaches 43.3 in the low setting; the presence model alone raises it to 55.8, the anchor term to 69.1, both together to 69.6, and the graph coupling adds 1.1 points on top (70.7), the margin that distinguishes \method from anchor-only methods. The inherited sample graph contributes 0.3 points in the low setting but 1.5 with all classes, where the anchor and the coupling change the result by at most 0.4, consistent with \cref{prop:special}.
 
 \begin{table}[t]
   \centering\footnotesize
@@ -28,25 +28,8 @@ All ablations use the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$) and th
 \end{table}
 
 \paragraph{Prior and graph.}
-\Cref{tab:prior} varies $\alpha$, $\lambda$ and the number of neighbours $m$, and replace the text kNN graph by a complete graph and by a degree-matched random graph. Accuracy varies by at most 0.6 points for $\lambda$ between 1 and 16 and by 0.3 for $m$ between 3 and 10, so the pooling strength is not a sensitive hyper-parameter (sensitivity curves in the supplementary material); removing the anchor ($\alpha=0$) costs 1.7 points and removing the coupling ($\lambda=0$) 1.6. The random graph (69.2) performs almost exactly like no coupling (69.1), and the complete graph (68.8) is below it, so pooling helps only when it follows the semantic neighbourhoods; this is the control that Hypothesis~\ref{hyp:smooth} requires. Likelihood and optimisation variants and the measured cost (\ph{9} ms per batch of 64 ImageNet images against \ph{7} ms for StatA) are given in the supplementary material.
+We vary $\alpha$, $\lambda$ and the number of neighbours $m$, and replace the text kNN graph by a complete graph and by a degree-matched random graph (table and sensitivity curves in the supplementary material). Accuracy varies by at most 0.6 points for $\lambda$ between 1 and 16 and by 0.3 for $m$ between 3 and 10, so the pooling strength is not a sensitive hyper-parameter; removing the anchor ($\alpha=0$) costs 1.7 points and removing the coupling ($\lambda=0$) 1.6. The random graph (69.2) performs almost exactly like no coupling (69.1), and the complete graph (68.8) is below it, so pooling helps only when it follows the semantic neighbourhoods; this is the control that Hypothesis~\ref{hyp:smooth} requires. Likelihood and optimisation variants and the measured cost (\ph{9} ms per batch of 64 ImageNet images against \ph{7} ms for StatA) are given in the supplementary material.
 
-\begin{table}[t]
-  \centering
-  \caption{Prior and graph ablation in the low setting (default: $\alpha{=}1$, $\lambda{=}4$, $m{=}5$, $\rho{=}0.05$). Standard deviations over tasks are 0.3 for every entry.}
-  \label{tab:prior}
-  \footnotesize\setlength{\tabcolsep}{2.5pt}
-  \begin{tabular}{@{}lcccccc@{}}
-    \toprule
-    $\alpha$ & 0 & 0.25 & 1 & 4 & 16 & \\
-    acc. & \ph{69.0} & \ph{70.2} & \ph{\textbf{70.7}} & \ph{70.4} & \ph{69.6} & \\
-    \midrule
-    $\lambda$ & 0 & 1 & 4 & 16 & 64 & $\infty$\\
-    acc. & \ph{69.1} & \ph{70.1} & \ph{\textbf{70.7}} & \ph{70.5} & \ph{69.9} & \ph{68.8}\\
-    \midrule
-    graph & $m{=}3$ & $m{=}5$ & $m{=}10$ & compl. & rand. & \\
-    acc. & \ph{70.4} & \ph{\textbf{70.7}} & \ph{70.5} & \ph{68.8} & \ph{69.2} & \\
-    \bottomrule
-  \end{tabular}
-\end{table}
+
 
 

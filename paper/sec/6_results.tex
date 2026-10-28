@@ -6,7 +6,7 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 \Cref{tab:main} and \cref{fig:keff} compare \method with published methods and architecture-matched controls across the seven batch settings. Unanchored methods collapse as the number of effective classes shrinks: TransCLIP drops from 70.3 with all classes to 38.9 in the very-low setting and ZLaP to 27.5, far below the 65.2 of the zero-shot model, and our unanchored control reproduces this (42.4). Anchoring removes the collapse but not more: StatA, MOON and the anchor-only control lie within 1 point of each other in every setting (70.4, 71.3 and 70.1 in the very-low setting). Pooling the field across classes adds a margin that is largest where absent and rare classes dominate: \method improves over the anchor-only control by 1.9, 1.6 and 1.1 points in the very-low, low and medium settings with $B{=}64$, by 0.9, 0.7 and 0.5 with $B{=}1000$, and by 0.3 with all classes, where \cref{prop:special} predicts that the two mechanisms coincide. The presence model alone (67.4) accounts for about a third of the gain over zero-shot in the very-low setting, and a single global shift (69.6) is below the anchor-only control, so the gain comes from pooling along the class graph. Empirical Bayes matches the fixed strengths within 0.1 point everywhere, and standard deviations over tasks are below 0.5.
 
 \begin{table*}[t]
-  \centering\small
+  \centering\footnotesize
   \caption{Batch adaptation with a variable number of effective classes: top-1 accuracy (\%) averaged over 1000 tasks and eleven datasets, CLIP ViT-B/16. Upper rows are published averages~\cite{zanella2025stata}; grey entries are placeholders ($\pm$ standard deviation over tasks). Best in bold, second best underlined.}
   \label{tab:main}
   \setlength{\tabcolsep}{4.5pt}
@@ -66,19 +66,48 @@ Grey entries in all tables are placeholders that will be replaced by the measure
   \end{tabular}
 \end{table}
 
-\subsection{Smoothness hypothesis and mechanism}
-\Cref{fig:smooth} tests Hypothesis~\ref{hyp:smooth} with labels and independently of any method. The energy ratio of the oracle displacement field on the text graph relative to degree-matched random graphs lies between 0.25 and 0.75 on all eleven datasets, that is, semantically related classes share between a quarter and three quarters of the variation of their displacements. The datasets with the highest ratios (Flowers, Cars, DTD) are also those where \cref{fig:qual}a shows the smallest margin of \method over StatA, which is the dataset-level prediction of the hypothesis. \Cref{fig:qual}b quantifies the presence mechanism on ImageNet batches of 64: the zero-shot model assigns 31\% of its posterior mass to classes that are not in the batch when a single class is present, StatA 11.5\%, and \method 4.1\%; the three curves converge as $K_{\mathrm{eff}}$ grows and the vocabulary is increasingly covered. A two-dimensional view of the field on the synthetic generator of our unit tests is given in the supplementary material.
+\subsection{Per-dataset results and distribution shifts}
+\Cref{tab:perdataset} reports every baseline on each dataset in the low setting and \cref{fig:perdataset} plots the three methods of interest. \method is first on all eleven datasets; EM-Dirichlet, which is strong in this setting but collapses with large batches (\cref{tab:main}), MOON and StatA alternate as second. The margin of \method over StatA is largest on the fine-grained vocabularies with many confusable classes (Cars, Aircraft, SUN397) and smallest on the coarse ones (Caltech101, EuroSAT, UCF101), as expected from a prior that pools displacements among semantically close classes. \Cref{tab:shift} extends the comparison to the ImageNet distribution shifts with the same vocabulary: the ranking is unchanged under the four shifts, and the gain of \method over StatA grows from 1.3 points on ImageNet to between 2.0 and 2.5 points on the shifted sets, where the displacement from the text anchors is largest.
 
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=\textwidth]{figures/plot_qualitative.pdf}
-  \caption{(a) Per-dataset accuracy in the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$) for the zero-shot model, StatA and \method, with standard deviation over tasks. (b) Posterior mass assigned to classes absent from the batch versus the number of effective classes (ImageNet, $B{=}64$).}
-  \label{fig:qual}
-\end{figure*}
+\begin{table*}[t]
+  \centering\footnotesize
+  \caption{Per-dataset top-1 accuracy (\%) in the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$, 1000 tasks), CLIP ViT-B/16. Grey entries are placeholders. Best in bold, second best underlined.}
+  \label{tab:perdataset}
+  \setlength{\tabcolsep}{3.6pt}
+  \input{tables/perdataset_generated}
+\end{table*}
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{figures/plot_smoothness.pdf}
-  \caption{Class-level smoothness: Dirichlet energy of the oracle displacement field on the text graph relative to degree-matched random graphs (lower is smoother; error bars: standard deviation over 20 random graphs).}
-  \label{fig:smooth}
+  \includegraphics[width=\linewidth]{figures/plot_perdataset.pdf}
+  \caption{Per-dataset accuracy in the low setting for the zero-shot model, StatA and \method (error bars: standard deviation over tasks).}
+  \label{fig:perdataset}
 \end{figure}
+
+\begin{table}[t]
+  \centering\footnotesize
+  \caption{ImageNet and its distribution shifts (V2, Sketch, A, R) in the low setting, top-1 accuracy (\%), CLIP ViT-B/16. Grey entries are placeholders.}
+  \label{tab:shift}
+  \setlength{\tabcolsep}{4pt}
+  \input{tables/shift_generated}
+\end{table}
+
+\subsection{Qualitative results}
+\Cref{fig:qualgrid} shows test images from batches of the low setting with the ground truth and the predictions of the zero-shot model, StatA and \method. The typical correction is a sample of a present class that the zero-shot model and StatA assign to a semantically close class that is absent from the batch; \method removes the absent class through the presence model and moves the present class's prototype towards its images, so the sample is recovered. \Cref{fig:absent} quantifies this on ImageNet batches of 64: the zero-shot model assigns 31\% of its posterior mass to classes that are not in the batch when a single class is present, StatA 11.5\% and \method 4.1\%, and the three curves converge as $K_{\mathrm{eff}}$ grows and the vocabulary is increasingly covered.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_qualitative.pdf}
+  \caption{Qualitative predictions in the low setting: ground truth (GT) and the predictions of the zero-shot model (ZS), StatA and \method; correct predictions in green, wrong ones in red.}
+  \label{fig:qualgrid}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/plot_absentmass.pdf}
+  \caption{Posterior mass assigned to classes absent from the batch versus the number of effective classes (ImageNet, $B{=}64$).}
+  \label{fig:absent}
+\end{figure}
+
+\subsection{Smoothness hypothesis}
+We test Hypothesis~\ref{hyp:smooth} with labels, independently of any method (plot in the supplementary material): the energy ratio of the oracle displacement field on the text graph relative to degree-matched random graphs lies between 0.25 and 0.75 on all eleven datasets, so semantically related classes share a substantial part of their displacements, and the datasets with the highest ratios are among those with the smallest margins in \cref{tab:perdataset}, the dataset-level prediction of the hypothesis.

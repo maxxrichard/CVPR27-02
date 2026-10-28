@@ -10,7 +10,7 @@ A VLM provides an image encoder $f_v$ and a text encoder $f_t$ mapping into a co
 with logit scale $\tau$ (100 for CLIP). We write $\Delta^K$ for the probability simplex and $\mathbf{1}$ for the all-ones vector.
 
 \paragraph{Unlabeled adaptation.}
-Given $X$ and $T$ only, the goal is to output posteriors $z_i\in\Delta^K$ that are more accurate and at least as well calibrated as $\hat{y}_i$. In the batch setting $X$ is processed at once; in the online setting batches $X^{(1)}, X^{(2)},\dots$ arrive sequentially and each must be predicted when it arrives. Following~\cite{zanella2025stata}, batches contain a variable number $K_{\mathrm{eff}}\le K$ of effective classes and online streams are correlated.
+Given $X$ and $T$ only, the goal is to output posteriors $z_i\in\Delta^K$ that are more accurate and at least as well calibrated as $\hat{y}_i$, either for a batch processed at once or for a stream of batches predicted as they arrive; following~\cite{zanella2025stata}, batches contain $K_{\mathrm{eff}}\le K$ effective classes and streams are correlated.
 
 \paragraph{Mixture-model transduction and its anchors.}
 TransCLIP~\cite{zanella2024transclip} and StatA~\cite{zanella2025stata} model $x_i$ with a $K$-component Gaussian mixture $\mathcal{N}(\mu_k,\Sigma_k)$ and minimise, over assignments $z$ and parameters, a penalised negative log-likelihood that contains a KL anchor to $\hat{y}$ and a Laplacian term over a $k$-nearest-neighbour graph $W_s$ of the samples. StatA additionally shrinks the mean of class $k$ towards its anchor,

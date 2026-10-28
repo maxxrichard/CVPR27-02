@@ -2,9 +2,14 @@
  "dataset": "caltech101",
  "setting": "B64_K2-10",
  "zero_shot": 93.3,
- "stata": 96.3,
- "graft": 98.3,
+ "mta": 93.7,
+ "em_dirichlet": 94.1,
+ "zlap": 44.9,
+ "transclip": 62.5,
+ "stata": 94.0,
+ "moon": 94.3,
+ "graft": 94.6,
  "graft_std": 0.3,
- "stata_std": 0.5,
+ "stata_std": 0.2,
  "placeholder": true
 }

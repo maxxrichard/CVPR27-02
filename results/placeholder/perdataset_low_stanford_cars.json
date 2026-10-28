@@ -2,9 +2,14 @@
  "dataset": "stanford_cars",
  "setting": "B64_K2-10",
  "zero_shot": 65.3,
- "stata": 68.9,
- "graft": 71.2,
- "graft_std": 0.4,
- "stata_std": 0.3,
+ "mta": 66.4,
+ "em_dirichlet": 70.3,
+ "zlap": 40.3,
+ "transclip": 44.4,
+ "stata": 69.6,
+ "moon": 71.0,
+ "graft": 72.4,
+ "graft_std": 0.3,
+ "stata_std": 0.5,
  "placeholder": true
 }

@@ -2,9 +2,14 @@
  "dataset": "ucf101",
  "setting": "B64_K2-10",
  "zero_shot": 66.7,
- "stata": 71.4,
- "graft": 73.6,
- "graft_std": 0.2,
- "stata_std": 0.3,
+ "mta": 67.9,
+ "em_dirichlet": 71.4,
+ "zlap": 33.3,
+ "transclip": 39.5,
+ "stata": 71.1,
+ "moon": 71.5,
+ "graft": 71.9,
+ "graft_std": 0.5,
+ "stata_std": 0.5,
  "placeholder": true
 }

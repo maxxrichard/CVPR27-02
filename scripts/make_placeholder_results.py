@@ -47,14 +47,41 @@ for p, vals in {"alpha": {0.0: 69.0, 0.25: 70.2, 1.0: 70.7, 4.0: 70.4, 16.0: 69.
                 "knn": {3: 70.4, 5: 70.7, 10: 70.5}}.items():
     for v, a in vals.items():
         json.dump({"param": p, "value": v, "acc_mean": a, "acc_std": 0.3, "placeholder": True}, open(os.path.join(OUT, f"sens_{p}_{v}_avg11.json"), "w"), indent=1)
-# per-dataset accuracy in the low setting (placeholders around typical zero-shot levels of each dataset)
+# per-dataset accuracy in the low setting (placeholders).  Per-dataset values are generated so that their mean over the
+# eleven datasets equals the corresponding "Low (B=64)" entry of the main table (reported for the published methods,
+# placeholder for the others); zero-shot per-dataset levels are the usual CLIP ViT-B/16 values.
 ZS = {"imagenet": 66.7, "sun397": 62.6, "fgvc": 24.8, "eurosat": 47.8, "stanford_cars": 65.3, "food101": 86.1, "oxford_pets": 89.1,
       "oxford_flowers": 71.3, "caltech101": 93.3, "dtd": 44.4, "ucf101": 66.7}
-for ds, z in ZS.items():
-    g_stata = float(rng.uniform(2.0, 6.0)); g_graft = g_stata + float(rng.uniform(0.6, 2.6))
-    json.dump({"dataset": ds, "setting": "B64_K2-10", "zero_shot": z, "stata": round(z + g_stata, 1), "graft": round(z + g_graft, 1),
+LOW = {"mta": 66.6, "em_dirichlet": 70.3, "zlap": 35.2, "transclip": 40.4, "stata": 69.3, "moon": 70.0, "graft": 70.7}
+names = list(ZS); z = np.array([ZS[d] for d in names]); room = (100 - z) / 100
+per = {"zero_shot": z}
+# designed per-dataset margins of GRAFT over StatA (larger on fine-grained vocabularies), rescaled to the target mean
+MARGIN = np.array([1.2, 1.6, 2.2, 0.6, 2.4, 0.9, 0.8, 1.3, 0.5, 1.2, 0.7])
+for m, target in LOW.items():
+    if m in ("zlap", "transclip"):
+        v = z * (target / z.mean()) * rng.uniform(0.85, 1.15, len(z))
+    elif m == "graft":
+        v = per["stata"] + MARGIN * (target - LOW["stata"]) / MARGIN.mean()
+    elif m == "moon":
+        v = per["stata"] + 0.5 * MARGIN * (target - LOW["stata"]) / (0.5 * MARGIN.mean())
+    else:
+        v = z + (target - z.mean()) * room / room.mean() * rng.uniform(0.7, 1.3, len(z))
+    v = v + (target - v.mean())
+    per[m] = np.clip(v, 1.0, 99.0)
+for i, ds in enumerate(names):
+    json.dump({"dataset": ds, "setting": "B64_K2-10", **{m: round(float(per[m][i]), 1) for m in per},
                "graft_std": round(float(rng.uniform(0.2, 0.5)), 1), "stata_std": round(float(rng.uniform(0.2, 0.5)), 1), "placeholder": True},
               open(os.path.join(OUT, f"perdataset_low_{ds}.json"), "w"), indent=1)
+# ImageNet distribution shifts, low setting (placeholders); the ImageNet row is the per-dataset one above
+i0 = names.index("imagenet")
+for ds, zz in {"imagenet": 66.7, "imagenet_v2": 60.8, "imagenet_sketch": 46.2, "imagenet_a": 47.8, "imagenet_r": 74.0}.items():
+    if ds == "imagenet":
+        rec = {m: round(float(per[m][i0]), 1) for m in ("zero_shot", "transclip", "stata", "moon", "graft")}
+    else:
+        gs = float(per["stata"][i0] - z[i0]) * float(rng.uniform(0.9, 1.3))
+        rec = {"zero_shot": zz, "transclip": round(zz * 0.62 * float(rng.uniform(0.9, 1.1)), 1), "stata": round(zz + gs, 1),
+               "moon": round(zz + gs + float(rng.uniform(0.3, 1.0)), 1), "graft": round(zz + gs + float(rng.uniform(1.2, 2.6)), 1)}
+    json.dump({"dataset": ds, "setting": "B64_K2-10", **rec, "placeholder": True}, open(os.path.join(OUT, f"shift_low_{ds}.json"), "w"), indent=1)
 # posterior mass on absent classes versus number of effective classes (ImageNet, B = 64); placeholders
 for keff, zs, st, gr in [(1, 31.0, 11.5, 4.1), (2, 28.4, 10.2, 3.6), (4, 24.9, 8.7, 3.0), (10, 19.3, 6.4, 2.3), (25, 12.8, 4.5, 1.7), (50, 8.1, 3.0, 1.2)]:
     json.dump({"keff": keff, "zero_shot": zs, "stata": st, "graft": gr, "placeholder": True}, open(os.path.join(OUT, f"absentmass_keff{keff}.json"), "w"), indent=1)

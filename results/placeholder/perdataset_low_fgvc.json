@@ -2,9 +2,14 @@
  "dataset": "fgvc",
  "setting": "B64_K2-10",
  "zero_shot": 24.8,
- "stata": 29.9,
- "graft": 32.0,
- "graft_std": 0.3,
+ "mta": 27.0,
+ "em_dirichlet": 35.1,
+ "zlap": 13.3,
+ "transclip": 16.8,
+ "stata": 35.0,
+ "moon": 36.3,
+ "graft": 37.6,
+ "graft_std": 0.4,
  "stata_std": 0.2,
  "placeholder": true
 }

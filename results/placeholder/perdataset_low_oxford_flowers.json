@@ -2,9 +2,14 @@
  "dataset": "oxford_flowers",
  "setting": "B64_K2-10",
  "zero_shot": 71.3,
- "stata": 75.2,
- "graft": 76.7,
- "graft_std": 0.2,
- "stata_std": 0.5,
+ "mta": 72.6,
+ "em_dirichlet": 76.1,
+ "zlap": 38.2,
+ "transclip": 45.9,
+ "stata": 74.2,
+ "moon": 75.0,
+ "graft": 75.7,
+ "graft_std": 0.4,
+ "stata_std": 0.2,
  "placeholder": true
 }

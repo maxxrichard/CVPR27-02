@@ -2,9 +2,14 @@
  "dataset": "sun397",
  "setting": "B64_K2-10",
  "zero_shot": 62.6,
- "stata": 65.0,
- "graft": 66.9,
- "graft_std": 0.3,
+ "mta": 64.2,
+ "em_dirichlet": 69.3,
+ "zlap": 30.7,
+ "transclip": 35.8,
+ "stata": 66.0,
+ "moon": 66.9,
+ "graft": 67.9,
+ "graft_std": 0.2,
  "stata_std": 0.4,
  "placeholder": true
 }

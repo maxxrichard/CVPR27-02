@@ -1,0 +1,10 @@
+{
+ "dataset": "imagenet_a",
+ "setting": "B64_K2-10",
+ "zero_shot": 47.8,
+ "transclip": 28.9,
+ "stata": 51.9,
+ "moon": 52.6,
+ "graft": 54.3,
+ "placeholder": true
+}
