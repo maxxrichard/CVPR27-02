@@ -7,7 +7,7 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 
 \begin{table*}[t]
   \centering\footnotesize
-  \caption{Batch adaptation with a variable number of effective classes: top-1 accuracy (\%) averaged over 1000 tasks and eleven datasets, CLIP ViT-B/16. Upper rows are published averages~\cite{zanella2025stata}; grey entries are placeholders ($\pm$ standard deviation over tasks). Best in bold, second best underlined.}
+  \caption{Batch adaptation with a variable number of effective classes: top-1 accuracy (\%) averaged over 1000 tasks and eleven datasets, CLIP ViT-B/16. Means of the upper rows are published averages~\cite{zanella2025stata}; all standard deviations (over tasks) and the grey means are placeholders pending our runs; the full-set column is a single task. Best in bold, second best underlined.}
   \label{tab:main}
   \setlength{\tabcolsep}{4.5pt}
   \begin{tabular}{lccccccc}
@@ -15,12 +15,12 @@ Grey entries in all tables are placeholders that will be replaced by the measure
     Method & Very low & Low & Medium & Medium & High & Very high & All\\
      & $B{=}64$ & $B{=}64$ & $B{=}64$ & $B{=}1000$ & $B{=}1000$ & $B{=}1000$ & full\\
     \midrule
-    CLIP zero-shot~\cite{radford2021clip} & 65.2 & 65.2 & 65.2 & 65.2 & 65.2 & 65.2 & 65.2\\
-    MTA~\cite{zanella2024mta} & 66.6 & 66.6 & 66.6 & 66.6 & 66.6 & 66.6 & 66.6\\
-    EM-Dirichlet~\cite{martin2024transductive} & 68.5 & 70.3 & 67.5 & 64.4 & 45.3 & 33.6 & 29.5\\
-    ZLaP~\cite{kalantidis2024zlap} & 27.5 & 35.2 & 44.7 & 41.5 & 52.2 & 58.4 & 66.4\\
-    TransCLIP~\cite{zanella2024transclip} & 38.9 & 40.4 & 42.7 & 56.5 & 62.0 & 64.4 & \textbf{70.3}\\
-    StatA~\cite{zanella2025stata} & 70.4 & 69.3 & 67.4 & 69.7 & 69.8 & 69.0 & 69.9\\
+    CLIP zero-shot~\cite{radford2021clip} & 65.2\ph{\sd{0.6}} & 65.2\ph{\sd{0.5}} & 65.2\ph{\sd{0.4}} & 65.2\ph{\sd{0.2}} & 65.2\ph{\sd{0.2}} & 65.2\ph{\sd{0.1}} & 65.2\\
+    MTA~\cite{zanella2024mta} & 66.6\ph{\sd{0.6}} & 66.6\ph{\sd{0.5}} & 66.6\ph{\sd{0.4}} & 66.6\ph{\sd{0.2}} & 66.6\ph{\sd{0.2}} & 66.6\ph{\sd{0.1}} & 66.6\\
+    EM-Dirichlet~\cite{martin2024transductive} & 68.5\ph{\sd{0.7}} & 70.3\ph{\sd{0.6}} & 67.5\ph{\sd{0.5}} & 64.4\ph{\sd{0.4}} & 45.3\ph{\sd{0.6}} & 33.6\ph{\sd{0.7}} & 29.5\\
+    ZLaP~\cite{kalantidis2024zlap} & 27.5\ph{\sd{1.1}} & 35.2\ph{\sd{0.9}} & 44.7\ph{\sd{0.8}} & 41.5\ph{\sd{0.5}} & 52.2\ph{\sd{0.4}} & 58.4\ph{\sd{0.3}} & 66.4\\
+    TransCLIP~\cite{zanella2024transclip} & 38.9\ph{\sd{1.0}} & 40.4\ph{\sd{0.9}} & 42.7\ph{\sd{0.8}} & 56.5\ph{\sd{0.4}} & 62.0\ph{\sd{0.3}} & 64.4\ph{\sd{0.2}} & \textbf{70.3}\\
+    StatA~\cite{zanella2025stata} & 70.4\ph{\sd{0.4}} & 69.3\ph{\sd{0.3}} & 67.4\ph{\sd{0.3}} & 69.7\ph{\sd{0.2}} & 69.8\ph{\sd{0.2}} & 69.0\ph{\sd{0.2}} & 69.9\\
     MOON~\cite{huang2026moon} & \ph{71.3\sd{0.4}} & \ph{70.0\sd{0.3}} & \ph{67.9\sd{0.3}} & \ph{70.1\sd{0.2}} & \ph{70.1\sd{0.2}} & \ph{69.3\sd{0.2}} & \ph{70.1}\\
     \midrule
     Unanchored mixture ($\alpha{=}\lambda{=}0$, no $\pi$) & \ph{42.4\sd{0.6}} & \ph{43.3\sd{0.5}} & \ph{45.4\sd{0.5}} & \ph{57.7\sd{0.3}} & \ph{62.8\sd{0.3}} & \ph{64.5\sd{0.2}} & \ph{70.3}\\
@@ -45,19 +45,19 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 
 \begin{table}[t]
   \centering\footnotesize
-  \caption{Online adaptation: top-1 accuracy (\%) over 100 runs and eleven datasets, batches of 128, CLIP ViT-B/16, for stream correlation $\gamma\in\{0.1,0.01,0.001\}$ and the separate-class stream. Grey entries are placeholders ($\pm$ standard deviation over runs).}
+  \caption{Online adaptation: top-1 accuracy (\%) over 100 runs and eleven datasets, batches of 128, CLIP ViT-B/16, for stream correlation $\gamma\in\{0.1,0.01,0.001\}$ and the separate-class stream. Means in black are published averages~\cite{zanella2025stata}; all standard deviations (over runs) and the grey means are placeholders.}
   \label{tab:online}
   \setlength{\tabcolsep}{4pt}
   \begin{tabular}{lcccc}
     \toprule
     Method & Low & Medium & High & Separate\\
     \midrule
-    CLIP zero-shot & 65.2 & 65.2 & 65.2 & 65.2\\
-    TENT~\cite{wang2021tent} & 65.8 & 65.5 & 65.3 & 64.5\\
-    TDA~\cite{karmanov2024tda} & \textbf{67.7} & 67.1 & 66.8 & 66.6\\
-    DMN~\cite{zhang2024dmn} & 67.2 & 66.5 & 66.3 & 65.8\\
+    CLIP zero-shot & 65.2\ph{\sd{0.3}} & 65.2\ph{\sd{0.3}} & 65.2\ph{\sd{0.3}} & 65.2\ph{\sd{0.3}}\\
+    TENT~\cite{wang2021tent} & 65.8\ph{\sd{0.4}} & 65.5\ph{\sd{0.5}} & 65.3\ph{\sd{0.6}} & 64.5\ph{\sd{0.8}}\\
+    TDA~\cite{karmanov2024tda} & \textbf{67.7}\ph{\sd{0.4}} & 67.1\ph{\sd{0.5}} & 66.8\ph{\sd{0.6}} & 66.6\ph{\sd{0.7}}\\
+    DMN~\cite{zhang2024dmn} & 67.2\ph{\sd{0.4}} & 66.5\ph{\sd{0.5}} & 66.3\ph{\sd{0.6}} & 65.8\ph{\sd{0.7}}\\
     OGA~\cite{fuchs2025oga} & \ph{67.5\sd{0.5}} & \ph{69.1\sd{0.5}} & \ph{69.6\sd{0.6}} & \ph{69.1\sd{0.7}}\\
-    StatA~\cite{zanella2025stata} & 67.0 & 68.9 & 69.5 & 69.1\\
+    StatA~\cite{zanella2025stata} & 67.0\ph{\sd{0.5}} & 68.9\ph{\sd{0.5}} & 69.5\ph{\sd{0.6}} & 69.1\ph{\sd{0.7}}\\
     MOON~\cite{huang2026moon} & \ph{67.4\sd{0.5}} & \ph{69.4\sd{0.5}} & \ph{69.9\sd{0.5}} & \ph{69.4\sd{0.6}}\\
     \midrule
     \method (transductive) & \ph{\underline{67.6}\sd{0.5}} & \ph{\textbf{70.1}\sd{0.4}} & \ph{\textbf{70.8}\sd{0.5}} & \ph{\textbf{70.2}\sd{0.6}}\\
@@ -98,7 +98,7 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/plot_qualitative.pdf}
-  \caption{Qualitative predictions in the low setting: ground truth (GT) and the predictions of the zero-shot model (ZS), StatA and \method; correct predictions in green, wrong ones in red.}
+  \caption{Qualitative predictions in the low setting: ground truth (GT) and the predictions of the zero-shot model (ZS), StatA and \method; correct predictions in green, wrong ones in red. The photographs are sample images and the labels are placeholders until the benchmark predictions are inserted.}
   \label{fig:qualgrid}
 \end{figure}
 

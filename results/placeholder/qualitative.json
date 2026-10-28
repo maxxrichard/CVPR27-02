@@ -1,0 +1,62 @@
+{
+ "placeholder": true,
+ "note": "Sample photographs from scikit-image (public domain / CC0); labels and predictions are ILLUSTRATIVE PLACEHOLDERS, no model was run.",
+ "items": [
+  {
+   "image": "figures/qualitative/samples/chelsea.png",
+   "label": "tabby cat",
+   "zs": "Egyptian cat",
+   "stata": "Egyptian cat",
+   "graft": "tabby cat"
+  },
+  {
+   "image": "figures/qualitative/samples/coffee.png",
+   "label": "espresso",
+   "zs": "cup",
+   "stata": "espresso",
+   "graft": "espresso"
+  },
+  {
+   "image": "figures/qualitative/samples/rocket.png",
+   "label": "missile",
+   "zs": "projectile",
+   "stata": "projectile",
+   "graft": "missile"
+  },
+  {
+   "image": "figures/qualitative/samples/motorcycle.png",
+   "label": "moped",
+   "zs": "motor scooter",
+   "stata": "motor scooter",
+   "graft": "moped"
+  },
+  {
+   "image": "figures/qualitative/samples/clock.png",
+   "label": "wall clock",
+   "zs": "analog clock",
+   "stata": "wall clock",
+   "graft": "wall clock"
+  },
+  {
+   "image": "figures/qualitative/samples/camera.png",
+   "label": "tripod",
+   "zs": "reflex camera",
+   "stata": "reflex camera",
+   "graft": "tripod"
+  },
+  {
+   "image": "figures/qualitative/samples/brick.png",
+   "label": "stone wall",
+   "zs": "cliff",
+   "stata": "cliff",
+   "graft": "cliff"
+  },
+  {
+   "image": "figures/qualitative/samples/page.png",
+   "label": "menu",
+   "zs": "book jacket",
+   "stata": "menu",
+   "graft": "menu"
+  }
+ ]
+}

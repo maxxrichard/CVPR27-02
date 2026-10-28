@@ -145,26 +145,30 @@ def absent_mass():
 
 def qualitative_grid(n_rows=2, n_cols=4):
     """Qualitative predictions: test images with the ground truth and the predictions of zero-shot, StatA and
-    GRAFT.  Real inputs: results/raw/qualitative.json, a list of {image, label, zs, stata, graft}; otherwise
-    placeholder slots.  Correct predictions are typeset in green, wrong ones in vermillion."""
-    f = os.path.join(RAW, "qualitative.json")
-    items = json.load(open(f)) if os.path.exists(f) else None
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(SINGLE, 1.95))
+    GRAFT.  Real inputs: results/raw/qualitative.json ({"items": [{image, label, zs, stata, graft}, ...]});
+    otherwise results/placeholder/qualitative.json (sample photographs with illustrative placeholder predictions,
+    watermarked).  Correct predictions are typeset in green, wrong ones in vermillion."""
+    f = os.path.join(RAW, "qualitative.json"); ph = False
+    if not os.path.exists(f):
+        f = os.path.join(PH, "qualitative.json"); ph = True
+    items = json.load(open(f))["items"] if os.path.exists(f) else []
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(SINGLE, 2.0))
     ok, bad = OKABE_ITO["green"], OKABE_ITO["vermillion"]
     for i, ax in enumerate(axes.ravel()):
         ax.set_xticks([]); ax.set_yticks([])
         for s_ in ax.spines.values(): s_.set_visible(True); s_.set_linewidth(0.5)
-        if items and i < len(items):
-            it = items[i]; ax.imshow(plt.imread(it["image"]))
+        if i < len(items):
+            it = items[i]; im = plt.imread(os.path.join(ROOT, it["image"]))
+            h, w = im.shape[:2]; c = min(h, w); y0, x0 = (h - c) // 2, (w - c) // 2
+            ax.imshow(im[y0:y0 + c, x0:x0 + c]); ax.set_aspect("equal")
             gt, preds = it["label"], [("ZS", it["zs"]), ("StatA", it["stata"]), ("GRAFT", it["graft"])]
         else:
-            ax.set_facecolor("#ececec"); ax.text(0.5, 0.5, "image", ha="center", va="center", fontsize=6, color="#9a9a9a", transform=ax.transAxes)
-            gt = "class"; preds = [("ZS", "other"), ("StatA", "other"), ("GRAFT", "class")] if i % 4 != 3 else [("ZS", "other"), ("StatA", "class"), ("GRAFT", "class")]
+            ax.set_facecolor("#ececec"); gt, preds = "class", []
         ax.set_title(f"GT: {gt}", fontsize=5.5, pad=2)
         for j, (m, p) in enumerate(preds):
-            ax.text(0.02, -0.12 - 0.17 * j, f"{m}: {p}", transform=ax.transAxes, fontsize=5, color=ok if p == gt else bad, va="top")
-    plt.subplots_adjust(wspace=0.15, hspace=1.15, top=0.93, bottom=0.2)
-    watermark(fig, items is None); save(fig, "plot_qualitative.pdf")
+            ax.text(0.0, -0.1 - 0.2 * j, f"{m}: {p}", transform=ax.transAxes, fontsize=4.7, color=ok if p == gt else bad, va="top")
+    plt.subplots_adjust(wspace=0.22, hspace=1.1, top=0.94, bottom=0.2)
+    watermark(fig, ph); save(fig, "plot_qualitative.pdf")
 
 
 if __name__ == "__main__":
