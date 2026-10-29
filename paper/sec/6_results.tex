@@ -2,7 +2,7 @@
 \label{sec:results}
 
 \subsection{Realistic batches}
-\Cref{tab:main} and \cref{fig:keff} compare \method with published methods and architecture-matched controls across the seven batch settings. Unanchored methods collapse as the number of effective classes shrinks: TransCLIP drops from 70.3 with all classes to 38.9 in the very-low setting and ZLaP to 27.5, far below the 65.2 of the zero-shot model, and our unanchored control reproduces this (42.4). Anchoring removes the collapse but not more: StatA, MOON and the anchor-only control lie within 1 point of each other in every setting (70.4, 71.3 and 70.1 in the very-low setting). Pooling the field across classes adds a margin that is largest where absent and rare classes dominate: \method improves over the anchor-only control by 1.9, 1.6 and 1.1 points in the very-low, low and medium settings with $B{=}64$, by 0.9, 0.7 and 0.5 with $B{=}1000$, and by 0.3 with all classes, where \cref{prop:special} predicts that the two mechanisms coincide. The presence model alone (67.4) accounts for about a third of the gain over zero-shot in the very-low setting, and a single global shift (69.6) is below the anchor-only control, so the gain comes from pooling along the class graph. Empirical Bayes matches the fixed strengths within 0.1 point everywhere, and standard deviations over tasks are below 0.5.
+\Cref{tab:main} and \cref{fig:keff} compare \method with the published methods and the architecture-matched controls across the seven batch settings. Three regimes are visible. First, the unanchored transductive methods collapse as the number of effective classes shrinks: TransCLIP falls from 70.3 with all classes to 38.9 in the very-low setting and ZLaP from 66.4 to 27.5, whereas EM-Dirichlet, the strongest method at $B{=}64$ (70.3 in the low setting), collapses in the opposite direction, to 33.6 at $B{=}1000$ with many classes and 29.5 on the full set. The unanchored control of our implementation reproduces the first pattern (42.4 to 45.4 at $B{=}64$). Second, anchoring removes the collapse but adds little beyond it: StatA, MOON and the anchor-only control lie within 1.2 points of each other in every setting (70.4, 71.3 and 70.1 in the very-low setting), so the count-dependent shrinkage that the three share is what prevents collapse. Third, pooling the field across classes adds a margin on top of anchoring that is largest where absent and rare classes dominate and vanishes where every class is well observed: \method improves over the anchor-only control by 1.9, 1.6 and 1.1 points in the very-low, low and medium settings with $B{=}64$, by 0.9, 0.7 and 0.5 points with $B{=}1000$, and by 0.3 points on the full set, where the special-case analysis of \cref{sec:field} predicts that the two mechanisms coincide; against MOON the margins are 0.7 to 0.1 points in the same order. The presence model alone reaches 67.4 in the very-low setting, about a third of the gain over zero-shot, and the complete-graph control, a single shift of all prototypes, stays below the anchor-only control in every setting (69.6 against 70.1), so the gain comes from pooling along the semantic neighbourhoods rather than from a global shift. Empirical Bayes selection of $(\alpha,\lambda)$ matches the fixed strengths within 0.1 point, and standard deviations over tasks are 0.2 to 0.4 points for the anchored methods, well below these margins.
 
 \begin{table*}[t]
   \centering\footnotesize
@@ -34,13 +34,13 @@
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{figures/plot_keff.pdf}
+  \includegraphics[width=0.85\linewidth]{figures/plot_keff.pdf}
   \caption{Top-1 accuracy versus the number of effective classes per batch (eleven-dataset mean, error bars: standard deviation over tasks); the dotted line is the zero-shot model.}
   \label{fig:keff}
 \end{figure}
 
 \subsection{Online streams}
-\Cref{tab:online} reports the online protocol. The cache-based TDA and DMN are strongest when the stream is weakly correlated (67.7 and 67.2 at $\gamma{=}0.1$) but gain little when it is strongly correlated (66.8 and 66.3 at $\gamma{=}0.001$), whereas the anchored StatA and MOON improve with correlation (69.5 and 69.9 at $\gamma{=}0.001$) because batches then contain few classes and many samples per class. \method follows the same trend and adds 1.2, 1.3 and 1.1 points over StatA at medium correlation, high correlation and the separate stream, and 0.6 points at low correlation; the inductive variant, which predicts each batch before updating the statistics, retains between 0.5 and 0.8 of that margin. The run-to-run standard deviation (0.4 to 0.6) is below the margins at medium and high correlation.
+\Cref{tab:online} reports the online protocol. The cache-based TDA and DMN are strongest on weakly correlated streams (67.7 and 67.2 at $\gamma{=}0.1$) but gain little on strongly correlated ones (66.8 and 66.3 at $\gamma{=}0.001$), whereas the anchored OGA, StatA and MOON improve with correlation (69.6, 69.5 and 69.9 at $\gamma{=}0.001$), since correlated batches contain few classes with many samples each; TENT never exceeds 65.8. \method follows the trend of the anchored methods and adds 1.2, 1.3 and 1.1 points over StatA at medium and high correlation and on the separate stream, and 0.6 at low correlation, where TDA leads by 0.1; over MOON the margins are 0.2 to 0.9 points. The inductive variant, which predicts each batch before updating the statistics, retains most of the margin (69.5, 70.3 and 69.8 against 70.1, 70.8 and 70.2), so the gain does not depend on transduction within the batch.
 
 \begin{table}[t]
   \centering\footnotesize
@@ -66,11 +66,11 @@
 \end{table}
 
 \subsection{Per-dataset results and distribution shifts}
-\Cref{tab:perdataset} reports every baseline on each dataset in the low setting and \cref{fig:perdataset} plots the three methods of interest. \method is first on all eleven datasets; EM-Dirichlet, which is strong in this setting but collapses with large batches (\cref{tab:main}), MOON and StatA alternate as second. The margin of \method over StatA is largest on the fine-grained vocabularies with many confusable classes (Cars, Aircraft, SUN397) and smallest on the coarse ones (Caltech101, EuroSAT, UCF101), as expected from a prior that pools displacements among semantically close classes. \Cref{tab:shift} extends the comparison to the ImageNet distribution shifts with the same vocabulary: the ranking is unchanged under the four shifts, and the gain of \method over StatA grows from 1.3 points on ImageNet to between 2.0 and 2.5 points on the shifted sets, where the displacement from the text anchors is largest.
+\Cref{tab:perdataset} reports every baseline on each dataset in the low setting and \cref{fig:perdataset} plots the zero-shot model, StatA and \method. \method is first on eight of the eleven datasets and second on SUN397, EuroSAT and Flowers102, where EM-Dirichlet, strong at $B{=}64$ but collapsing with large batches (\cref{tab:main}), leads by 1.4, 4.3 and 0.4 points. Against StatA, \method improves on every dataset; the margin is largest on the fine-grained vocabularies with many confusable classes, Stanford Cars (2.8), FGVC-Aircraft (2.6) and SUN397 (1.9), and smallest on the coarse ones, Caltech101 (0.6), EuroSAT (0.7) and UCF101 (0.8), as expected from a prior that pools displacements among semantically close classes. \Cref{tab:shift} extends the comparison to the ImageNet distribution shifts with the 1000-class vocabulary. The ranking is unchanged under the four shifts; TransCLIP remains far below the zero-shot model (29.1 against 46.2 on ImageNet-Sketch), StatA improves over zero-shot by 4.1 to 5.4 points, and the gain of \method over StatA grows from 1.3 points on ImageNet to 2.0 to 2.5 points on the shifted sets, where the displacement of the image distribution from the text anchors, and with it the shared component that the graph propagates, is largest.
 
 \begin{table*}[t]
   \centering\footnotesize
-  \caption{Per-dataset top-1 accuracy (\%) in the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$, 1000 tasks), CLIP ViT-B/16.}
+  \caption{Per-dataset top-1 accuracy (\%) in the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$), CLIP ViT-B/16.}
   \label{tab:perdataset}
   \setlength{\tabcolsep}{3.6pt}
   \input{tables/perdataset_generated}
@@ -78,35 +78,38 @@
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{figures/plot_perdataset.pdf}
+  \includegraphics[width=0.76\linewidth]{figures/plot_perdataset.pdf}
   \caption{Per-dataset accuracy in the low setting for the zero-shot model, StatA and \method.}
   \label{fig:perdataset}
 \end{figure}
 
-\begin{table}[t]
-  \centering\footnotesize
-  \caption{ImageNet and its distribution shifts (V2, Sketch, A, R) in the low setting, top-1 accuracy (\%), CLIP ViT-B/16.}
-  \label{tab:shift}
-  \setlength{\tabcolsep}{4pt}
-  \input{tables/shift_generated}
-\end{table}
+\begin{figure}[t]
+  \begin{minipage}[t]{0.56\linewidth}
+    \centering\scriptsize
+    \captionof{table}{ImageNet (IN) and its shifts V2, Sketch (S), A and R in the low setting, top-1 accuracy (\%), CLIP ViT-B/16.}
+    \label{tab:shift}
+    \setlength{\tabcolsep}{2pt}
+    \input{tables/shift_generated}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.42\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/plot_absentmass.pdf}
+    \caption{Posterior mass assigned to classes absent from the batch versus the number of effective classes (ImageNet, $B{=}64$).}
+    \label{fig:absent}
+  \end{minipage}
+\end{figure}
+
+
+
 
 \subsection{Qualitative results}
-\Cref{fig:qualgrid} shows test images from batches of the low setting with the ground truth and the predictions of the zero-shot model, StatA and \method. The typical correction is a sample of a present class that the zero-shot model and StatA assign to a semantically close class absent from the batch; \method removes that class through the presence model and moves the present class's prototype towards its images. \Cref{fig:absent} quantifies this on ImageNet batches of 64: the zero-shot model assigns 31\% of its posterior mass to classes that are not in the batch when a single class is present, StatA 11.5\% and \method 4.1\%, and the three curves converge as $K_{\mathrm{eff}}$ grows and the vocabulary is increasingly covered.
+\Cref{fig:qualgrid} shows test images from batches of the low setting with the ground truth and the predictions of the zero-shot model, StatA and \method. The typical correction is a sample of a present class that the zero-shot model assigns to a semantically close class absent from the batch (an Egyptian cat for a tabby cat, a motor scooter for a moped); StatA recovers some of these samples when the present class has enough evidence to move its prototype, and \method recovers the remaining ones because the absent neighbour is both removed through the presence model and displaced consistently with the present class. The failure case, a stone wall predicted as a cliff by all three methods, has no close neighbour in the batch. \Cref{fig:absent} quantifies the mechanism on ImageNet batches of 64: with a single present class the zero-shot model assigns 31.0\% of its posterior mass to classes that are not in the batch, StatA 11.5\% and \method 4.1\%; with fifty present classes the values converge to 8.1\%, 3.0\% and 1.2\%. The ratio between StatA and \method is close to three at every $K_{\mathrm{eff}}$, the effect of the presence term $\log\pi_k$ rather than of the field.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{figures/plot_qualitative.pdf}
+  \includegraphics[width=0.7\linewidth]{figures/plot_qualitative.pdf}
   \caption{Qualitative predictions in the low setting: ground truth (GT) and the predictions of the zero-shot model (ZS), StatA and \method; correct predictions in green, wrong ones in red.}
   \label{fig:qualgrid}
 \end{figure}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{figures/plot_absentmass.pdf}
-  \caption{Posterior mass assigned to classes absent from the batch versus the number of effective classes (ImageNet, $B{=}64$).}
-  \label{fig:absent}
-\end{figure}
 
-\subsection{Smoothness hypothesis}
-We test Hypothesis~\ref{hyp:smooth} with labels, independently of any method (plot in the supplementary material): the energy ratio of the oracle displacement field on the text graph relative to degree-matched random graphs lies between 0.25 and 0.75 on all eleven datasets, so semantically related classes share a substantial part of their displacements, and the datasets with the highest ratios are among those with the smallest margins in \cref{tab:perdataset}, the dataset-level prediction of the hypothesis.

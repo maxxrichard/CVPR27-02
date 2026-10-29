@@ -4,34 +4,47 @@
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/architecture/architecture.png}
-  \caption{Overview of \method. Frozen encoders give features $X$ and anchors $T$. The anchors define the zero-shot prior $\hat{y}$ and the class graph $L_T$. Closed-form block updates alternate the E-step over $z$ with M-steps for the presence $\pi$, the graph-pooled displacement field $D$ and the shared covariance; $\mu = T + D$ are the adapted prototypes and $z$ the prediction.}
+  \caption{Overview of \method. Frozen encoders give features $X$ and anchors $T$. The anchors define the zero-shot prior $\hat{y}$ and the class graph $L_T$, the features define the sample graph $W_s$. Closed-form block updates alternate the E-step over $z$ with M-steps for the presence $\pi$, the graph-pooled displacement field $D$ and the shared covariance; $\mu = T + D$ are the adapted prototypes and $z$ the prediction.}
   \label{fig:framework}
 \end{figure*}
 
-\method keeps the generative view of transduction~\cite{zanella2024transclip,zanella2025stata} but changes the object that is adapted: instead of $K$ independent prototypes it estimates a \emph{displacement field} $D\in\R^{K\times d}$ anchored at the text embeddings, $\mu_k = t_k + d_k$, with a prior that couples semantically related classes, together with the class proportions $\pi\in\Delta^K$ and a covariance shared by all classes. \Cref{fig:framework} shows the data flow: frozen encoders, the inherited sample graph $W_s$, the new class graph $L_T$, and a block-coordinate inference whose every step is closed form.
+\method keeps the generative view of transduction~\cite{zanella2024transclip,zanella2025stata} but changes the object that is adapted: instead of $K$ independent prototypes it estimates a \emph{displacement field} $D\in\R^{K\times d}$ anchored at the text embeddings, $\mu_k = t_k + d_k$, under a prior that couples semantically related classes, together with the class proportions $\pi\in\Delta^K$ and a shared covariance. \Cref{fig:framework} shows the components: the frozen encoders with the zero-shot prior of \cref{eq:zs} and the two graphs (\cref{sec:graphs}), the likelihood and the graph-regularised field (\cref{sec:field}), the class-presence model (\cref{sec:presence}), the objective (\cref{sec:objective}), the closed-form inference (\cref{sec:inference}) and the empirical Bayes rule for the prior strength (\cref{sec:eb}).
 
-\subsection{Graph-regularized displacement field}
+\subsection{Sample graph and semantic class graph}
+\label{sec:graphs}
+Two graphs enter the model. The \emph{sample graph} $W_s\in\R^{N\times N}$, inherited from~\cite{zanella2024transclip,zanella2025stata}, connects each image to its $m_s$ nearest neighbours in feature space with weight $(W_s)_{ii'} = x_i^{\top}x_{i'}$; it encodes the manifold assumption that neighbouring images share a label. The \emph{semantic class graph}, new to this work, is built from the text anchors only. Let $S = TT^{\top}$ be the cosine similarity between anchors. Each class is connected to its $m$ most similar classes with weight
+\begin{equation}
+  w_{kl} = \exp\big((S_{kl}-1)/\rho\big),
+  \label{eq:classgraph}
+\end{equation}
+the neighbourhoods are symmetrised by union, and the normalised Laplacian is $L_T = I - \mathrm{D}^{-1/2} W \mathrm{D}^{-1/2}$ with $\mathrm{D} = \diag(W\mathbf{1})$. $L_T\in\R^{K\times K}$ is positive semi-definite with spectrum in $[0,2]$, is computed once per vocabulary and requires no image; it encodes the hypothesis, stated below, that semantically related classes are displaced from their anchors in similar directions.
+
+\subsection{Graph-regularised displacement field}
 \label{sec:field}
 \paragraph{Likelihood.}
-Each class is a Gaussian with mean $\mu_k$ and a diagonal covariance $\Sigma=\diag(\sigma^2)$ shared across classes. As in TransCLIP, the likelihood is tempered by $\kappa$, which plays the role of a covariance inflation and keeps the responsibilities soft on $d$-dimensional features:
+Each class is a Gaussian with mean $\mu_k = t_k + d_k$ and a diagonal covariance $\Sigma=\diag(\sigma^2)$ shared across classes. As in TransCLIP, the likelihood is tempered by $\kappa$, which acts as a covariance inflation and keeps the responsibilities soft on $d$-dimensional features:
 \begin{equation}
   \ell_{ik}(D,\sigma) = -\frac{1}{2\kappa}\Big[\sum_{j=1}^{d}\frac{(x_{ij}-t_{kj}-d_{kj})^2}{\sigma_j^2} + \sum_{j=1}^{d}\log\sigma_j^2\Big].
   \label{eq:lik}
 \end{equation}
+Given responsibilities $z$, the shared variance has the closed-form M-step $\sigma_j^2 = \tfrac{1}{N}\sum_{i,k} z_{ik}(x_{ij}-\mu_{kj})^2$.
 
 \paragraph{Prior.}
-The field is given a Gaussian Markov random field prior~\cite{rue2005gmrf} that factorises over feature dimensions,
+The field receives a Gaussian Markov random field prior~\cite{rue2005gmrf} that factorises over feature dimensions,
 \begin{equation}
   p(D) \propto \exp\Big(-\tfrac{1}{2}\sum_{j=1}^{d} d_{:j}^{\top} Q\, d_{:j}\Big),\qquad
   Q = \frac{\alpha I_K + \lambda L_T}{\kappa\,\bar{\sigma}^2},
   \label{eq:prior}
 \end{equation}
-with $\bar{\sigma}^2 = \tfrac{1}{d}\sum_j\sigma_j^2$. The term $\alpha I_K$ pulls every displacement towards zero, that is, every prototype towards its text anchor; the term $\lambda L_T$ penalises the Dirichlet energy $\sum_{k\sim l} w_{kl}\|d_k/\sqrt{\mathrm{D}_k} - d_l/\sqrt{\mathrm{D}_l}\|^2$ and therefore asks the displacements of neighbouring classes to agree. Dividing by $\kappa\bar{\sigma}^2$ expresses $\alpha$ and $\lambda$ in units of sample counts: a prior strength of $\alpha=1$ is worth one tempered observation. Writing $N_z=\diag(n_1,\dots,n_K)$, $\bar{x}_k = \sum_i z_{ik}x_i/n_k$ and $e_k = \bar{x}_k - t_k$ (with $e_k=0$ when $n_k=0$), the maximum a posteriori field given the responsibilities is obtained for every feature dimension $j$ from a $K\times K$ linear system,
+with $\bar{\sigma}^2 = \tfrac{1}{d}\sum_j\sigma_j^2$. The term $\alpha I_K$ pulls every displacement towards zero, that is, every prototype towards its text anchor; the term $\lambda L_T$ penalises the Dirichlet energy $\sum_{k\sim l} w_{kl}\|d_k/\sqrt{\mathrm{D}_k} - d_l/\sqrt{\mathrm{D}_l}\|^2$ and therefore asks the displacements of neighbouring classes to agree. Dividing by $\kappa\bar{\sigma}^2$ expresses $\alpha$ and $\lambda$ in units of sample counts: a prior strength of $\alpha=1$ is worth one tempered observation.
+
+\paragraph{Closed-form field.}
+Writing $N_z=\diag(n_1,\dots,n_K)$ with $n_k=\sum_i z_{ik}$, $\bar{x}_k = \sum_i z_{ik}x_i/n_k$ and $e_k = \bar{x}_k - t_k$ (with $e_k=0$ when $n_k=0$), the maximum a posteriori field given the responsibilities is obtained for every feature dimension $j$ from a $K\times K$ linear system,
 \begin{equation}
   d_{:j} = \big(N_z + s_j(\alpha I_K + \lambda L_T)\big)^{-1} N_z\, e_{:j}, \qquad s_j = \sigma_j^2/\bar{\sigma}^2 .
   \label{eq:dsolve}
 \end{equation}
-\Cref{eq:dsolve} is a graph filter applied to the empirical displacements, weighted by how much evidence each class has (\cref{fig:module}). Classes with $n_k \gg \alpha+\lambda$ keep their empirical displacement; classes with little or no evidence receive a smoothed combination of their neighbours' displacements. The $d$ systems share the matrix up to the scalar $s_j$ and are solved jointly by preconditioned conjugate gradients, or exactly for small $K$.
+\Cref{eq:dsolve} is a graph filter applied to the empirical displacements, weighted by the evidence of each class (\cref{fig:module}): classes with $n_k \gg \alpha+\lambda$ keep their empirical displacement, and classes with little or no evidence receive a smoothed combination of their neighbours' displacements. The $d$ systems share the matrix up to $s_j$ and are solved jointly by preconditioned conjugate gradients.
 
 \begin{figure}[t]
   \centering
@@ -40,6 +53,23 @@ with $\bar{\sigma}^2 = \tfrac{1}{d}\sum_j\sigma_j^2$. The term $\alpha I_K$ pull
   \label{fig:module}
 \end{figure}
 
+\paragraph{Special cases.}
+With $\lambda=0$, \cref{eq:dsolve} reduces per dimension to $d_{kj} = \frac{n_k}{n_k+\alpha s_j}\,e_{kj}$, the count-based anchor shrinkage of StatA (\cref{eq:stata}) and MOON~\cite{huang2026moon}, which are therefore the graph-free member of the family. With $\alpha=0$, $L_T$ the Laplacian of the complete graph and $\lambda\to\infty$, every class receives the count-weighted mean displacement $d = \sum_k n_k e_k / \sum_k n_k$, a single global shift of all prototypes. \method interpolates between these extremes along the semantic neighbourhoods.
+
+\paragraph{Absent classes.}
+Let $A=\{k: n_k = 0\}$ be the absent classes, $P$ their complement and $Q_\lambda = \alpha I + \lambda L_T$. Since the rows of \cref{eq:dsolve} in $A$ have $n_k=0$ and $e_k=0$, the solution satisfies $Q_{\lambda,AA}\,D_A + Q_{\lambda,AP}\,D_P = 0$, so
+\begin{equation}
+  D_A = -Q_{\lambda,AA}^{-1}Q_{\lambda,AP}\,D_P
+  \label{eq:harmonic}
+\end{equation}
+is the harmonic extension of the present-class field, and $D_P$ solves \cref{eq:dsolve} restricted to $P$ with $Q_\lambda$ replaced by its Kron reduction $Q_\lambda/Q_{\lambda,AA}$~\cite{dorfler2013kron}. Absent classes therefore affect the present-class prototypes only through the effective graph, never through data, and are placed where their neighbours' displacements predict (\cref{fig:concept}c).
+
+\paragraph{Posterior variance.}
+Given $z$, the posterior covariance of $d_{:j}$ is $\kappa\sigma_j^2\,(N_z + s_j Q_\lambda)^{-1}$. Since $\lambda L_T\succeq 0$, $\mathrm{Var}(d_{kj}) \le \kappa\sigma_j^2/(n_k + s_j\alpha)$ for every class $k$, the variance under independent shrinkage, with strict inequality for every class connected to a present class: pooling never increases the uncertainty of a prototype, and for absent classes it replaces the prior variance by a value controlled by the neighbours' counts. Proofs of the three statements are in the supplementary material; each is also verified numerically by the released unit tests.
+
+\paragraph{Smoothness hypothesis.}
+None of these statements guarantees higher accuracy than zero-shot inference; the benefit of the coupling rests on a testable hypothesis, class-level smoothness (H1): the oracle displacement field $e^{\star}_k = \E[x\,|\,y=k] - t_k$ has a Dirichlet energy on $L_T$ substantially smaller than on a degree-matched random graph. If H1 fails, \method reduces in expectation to anchor-only shrinkage; \cref{sec:ablation} measures H1 with labels.
+
 \subsection{Class presence as label shift}
 \label{sec:presence}
 The mixture weights $\pi$ are free parameters with a symmetric Dirichlet prior $\mathrm{Dir}(c+1)$. Their M-step is the smoothed count
@@ -47,7 +77,7 @@ The mixture weights $\pi$ are free parameters with a symmetric Dirichlet prior $
   \pi_k = \frac{n_k + c}{N + Kc},
   \label{eq:pi}
 \end{equation}
-and they enter the E-step as $\log\pi_k$, which is the classical label-shift correction of a calibrated classifier~\cite{saerens2002adjusting}: the zero-shot posterior implicitly assumes uniform class priors, and \cref{eq:pi} replaces them by the estimate obtained from the batch. For a batch with $K_{\mathrm{eff}}\ll K$ classes, absent classes receive $\pi_k\approx c/(N+Kc)$ while present ones receive $n_k/(N+Kc)$; with $c=\tfrac{1}{2}$ a present class with sixteen samples is more than thirty times more likely a priori than an absent one in a batch of 64 over 1000 classes. The pseudo-count $c>0$ keeps $\log\pi_k$ finite and lets a class that was absent in earlier online batches re-enter the stream.
+and they enter the E-step as $\log\pi_k$, which is the classical label-shift correction of a calibrated classifier~\cite{saerens2002adjusting}: the zero-shot posterior implicitly assumes uniform class priors, and \cref{eq:pi} replaces them by the estimate obtained from the batch. For a batch with $K_{\mathrm{eff}}\ll K$ classes, absent classes receive $\pi_k\approx c/(N+Kc)$ while present ones receive $n_k/(N+Kc)$: with $c=\tfrac{1}{2}$, a present class with sixteen samples is more than thirty times more likely a priori than an absent one in a batch of 64 over 1000 classes. The pseudo-count keeps $\log\pi_k$ finite and lets a class absent from earlier online batches re-enter the stream.
 
 \subsection{Objective}
 \label{sec:objective}
@@ -59,61 +89,17 @@ Collecting the terms, \method minimises over $(z, D, \sigma, \pi)$
     - c\sum_k \log\pi_k ,
   \label{eq:objective}
 \end{align}
-where the first line is the variational free energy of the mixture with the text prior $\hat{y}^{\lambda_y}$ of~\cite{zanella2024transclip}, the second line contains the inherited sample-graph term ($m_s$ nearest neighbours), the new field prior and the presence prior. Setting $\lambda = 0$ and dropping the $\pi$ terms recovers the StatA objective up to its per-class covariances; setting in addition $\alpha=0$ and $\lambda_L = 0$ recovers the unanchored mixture.
+where the first line is the variational free energy of the mixture with the text prior $\hat{y}^{\lambda_y}$ of~\cite{zanella2024transclip}, and the second line contains the inherited sample-graph term, the field prior of \cref{eq:prior} and the presence prior. With $\lambda = 0$ and without the $\pi$ terms this is the StatA objective up to its per-class covariances; with $\alpha=\lambda_L=0$ in addition, the unanchored mixture.
 
 \subsection{Inference}
 \label{sec:inference}
-The inference alternates four closed-form blocks (pseudocode in the supplementary material). The E-step is the standard mean-field update with the Laplacian term linearised at the current $z$ (a majorise-minimise step~\cite{hunter2004mm,ziko2020laplacianshot,zanella2024transclip}):
+The objective is minimised by block-coordinate descent over four blocks (pseudocode in the supplementary material). The E-step is the mean-field update with the Laplacian term linearised at the current $z$, a majorise-minimise step~\cite{hunter2004mm,ziko2020laplacianshot,zanella2024transclip}:
 \begin{equation}
   z_{ik} \propto \pi_k\,\hat{y}_{ik}^{\lambda_y}\exp\Big(\ell_{ik} + \frac{\lambda_L}{2m_s}\big[(W_s + W_s^{\top})z\big]_{ik}\Big),
   \label{eq:estep}
 \end{equation}
-iterated a few times. The M-steps are \cref{eq:pi}, \cref{eq:dsolve} and the shared variance $\sigma_j^2 = \tfrac{1}{N}\sum_{i,k} z_{ik}(x_{ij}-\mu_{kj})^2$. All quantities depend on the data only through the sufficient statistics $n = z^{\top}\mathbf{1}$, $S = z^{\top}X$ and $q = \sum_i x_i^{\odot 2}$, which makes the online variant immediate: statistics are accumulated over the stream with an optional forgetting factor $\varrho$, and the same M-steps are applied after every batch (algorithm in the supplementary material). The prediction for a batch is its posterior $z$ after adaptation, as in the transductive protocol of~\cite{zanella2025stata}; a strictly inductive variant predicts before the statistics are updated.
-
-
-
-
+iterated a few times. The M-steps are the presence update of \cref{eq:pi}, the field of \cref{eq:dsolve} and the shared variance of \cref{sec:field}. Each block update is the exact minimiser of \cref{eq:objective} over its block when $\lambda_L=0$, so $J$ decreases monotonically and converges; with $\lambda_L>0$ the E-step minimises a majoriser of $J$, as in~\cite{zanella2024transclip}. All quantities depend on the data only through the sufficient statistics $n = z^{\top}\mathbf{1}$, $S = z^{\top}X$ and $q = \sum_i x_i^{\odot 2}$, which makes the online variant immediate: the statistics are accumulated over the stream with an optional forgetting factor $\varrho$, and the same M-steps are applied after every batch. The prediction for a batch is its posterior $z$ after adaptation, as in the transductive protocol of~\cite{zanella2025stata}; a strictly inductive variant predicts before the statistics are updated. Per outer iteration the E-step costs $O(NKd + N m_s K)$ and the field $O(n_{\mathrm{cg}}\,K d\,(1+m))$ with conjugate gradients; no backward pass is executed and the VLM is untouched after feature extraction.
 
 \subsection{Empirical Bayes selection of the pooling strength}
 \label{sec:eb}
-Fixed $(\alpha,\lambda)$ are used for all datasets in the main protocol, but the model also admits a label-free rule. Given the responsibilities, the empirical displacements of the present classes $P=\{k: n_k\ge 1\}$ are, under the model, $e_P = d_P + \epsilon$ with $\epsilon_k\sim\mathcal{N}(0,\kappa\sigma^2/n_k)$ and $d_P\sim\mathcal{N}(0,\tilde{Q}_P^{-1})$, where $\tilde{Q}_P$ is the Schur complement of $Q$ onto $P$. With the isotropic approximation $\sigma_j^2\approx\bar\sigma^2$ the marginal likelihood of $E_P$ is a Gaussian with covariance $C=\kappa\bar\sigma^2(\tilde{Q}_P^{-1}+N_{z,P}^{-1})$ per dimension,
-\begin{equation}
-  \log p(E_P\,|\,\alpha,\lambda) = -\tfrac{1}{2}\tr\big(E_P^{\top}C^{-1}E_P\big) - \tfrac{d}{2}\log\det C + \mathrm{const},
-  \label{eq:evidence}
-\end{equation}
-which we maximise over a small logarithmic grid at every M-step whenever at least three classes are present (details in the supplementary material).
-
-\subsection{Analysis}
-\label{sec:analysis}
-Proofs are in the supplementary material; every statement is also verified numerically by the unit tests shipped with the code.
-
-\begin{proposition}[Special cases]
-\label{prop:special}
-With $\lambda=0$, \cref{eq:dsolve} gives $d_k = \frac{n_k}{n_k+\alpha s_j}\,e_k$ per dimension, the count-based anchor shrinkage of StatA~\cite{zanella2025stata} (\cref{eq:stata}) and MOON~\cite{huang2026moon}. With $\alpha=0$, $L_T$ the Laplacian of the complete graph and $\lambda\to\infty$, every class receives the same displacement $d = \sum_k n_k e_k / \sum_k n_k$, the count-weighted mean displacement, that is, a single global shift of all prototypes.
-\end{proposition}
-
-\begin{proposition}[Absent classes are harmonic extensions]
-\label{prop:absent}
-Let $A=\{k: n_k = 0\}$ and $P$ its complement, and let $Q_\lambda = \alpha I + \lambda L_T$. The solution of \cref{eq:dsolve} satisfies $Q_{\lambda,AA}\,D_A + Q_{\lambda,AP}\,D_P = 0$, so $D_A = -Q_{\lambda,AA}^{-1}Q_{\lambda,AP}D_P$ is the harmonic extension of the present-class field, and $D_P$ solves \cref{eq:dsolve} on $P$ with $Q_\lambda$ replaced by its Kron reduction $Q_\lambda/Q_{\lambda,AA}$~\cite{dorfler2013kron}: absent classes change the present-class prototypes only through the effective graph, never through data.
-\end{proposition}
-
-\begin{proposition}[Pooling never increases posterior variance]
-\label{prop:variance}
-Under the model of \cref{sec:field}, the posterior covariance of $d_{:j}$ given $z$ is $\kappa\sigma_j^2\,(N_z + s_j Q_\lambda)^{-1}$; since $\lambda L_T\succeq 0$, $\mathrm{Var}(d_{kj}) \le \kappa\sigma_j^2/(n_k + s_j\alpha)$ for every class $k$, the variance under independent shrinkage, with strict inequality for every class connected to a present class.
-\end{proposition}
-
-\begin{proposition}[Monotone block updates]
-\label{prop:monotone}
-Each block update of the inference in \cref{sec:inference} is the exact minimiser of \cref{eq:objective} over its block when $\lambda_L=0$, so $J$ decreases monotonically and converges; with $\lambda_L>0$ the E-step minimises a majoriser of $J$, as in~\cite{zanella2024transclip}.
-\end{proposition}
-
-None of the propositions guarantees higher accuracy than zero-shot inference; the benefit rests on the following testable hypothesis.
-
-\begin{hypothesis}[Class-level smoothness]
-\label{hyp:smooth}
-The oracle displacement field $e^{\star}_k = \E[x\,|\,y=k] - t_k$ has a Dirichlet energy on $L_T$ that is substantially smaller than on a random graph with the same degree sequence. If this fails, $\lambda L_T$ cannot help and \method reduces, in expectation, to the behaviour of anchor-only shrinkage.
-\end{hypothesis}
-
-\subsection{Complexity}
-\label{sec:complexity}
-Per outer iteration the E-step costs $O(NKd + N m_s K)$ and the field $O(n_{\mathrm{cg}}\,K d\,(1+m))$ with conjugate gradients ($O(K^3 + K^2 d)$ exactly); memory is $O(NK + Kd + K^2)$, the class graph has $O(Km)$ edges and is built once per vocabulary, and empirical Bayes adds $O(|G|K^3)$ per M-step for $|G|$ grid points. No backward pass is executed and the VLM is untouched after feature extraction.
+Fixed $(\alpha,\lambda)$ are used for all datasets in the main protocol, but the model also admits a label-free rule: under the model, the empirical displacements of the present classes are Gaussian with a covariance that depends on $(\alpha,\lambda)$ through the Schur complement of $Q$ onto the present classes, and their marginal likelihood is maximised over a small logarithmic grid at every M-step whenever at least three classes are present. The derivation is given in the supplementary material.

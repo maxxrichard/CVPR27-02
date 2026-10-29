@@ -5,16 +5,16 @@ Throughout, $Q_\lambda = \alpha I + \lambda L_T$, $N_z = \diag(n)$, and for a fi
 \paragraph{Derivation of \cref{eq:dsolve}.}
 Given $z$, the terms of \cref{eq:objective} that depend on $D$ are $\sum_{i,k} z_{ik}\frac{(x_{ij} - t_{kj} - d_{kj})^2}{2\kappa\sigma_j^2}$ summed over $j$, plus $\frac{1}{2\kappa\bar\sigma^2}\sum_j d_{:j}^{\top}Q_\lambda d_{:j}$. Expanding the square around $\bar{x}_{kj}$ and dropping terms that do not depend on $d$ gives, per dimension, $\frac{1}{2\kappa\sigma_j^2}\sum_k n_k (d_k - e_k)^2 + \frac{1}{2\kappa\bar\sigma^2} d^{\top}Q_\lambda d$. Multiplying by $\kappa\sigma_j^2$ and setting the gradient to zero yields $(N_z + s_j Q_\lambda)d = N_z e$, which is \cref{eq:dsolve}. The matrix is positive definite whenever $\alpha>0$ or $n_k>0$ for some $k$ in every connected component, so the solution is unique.
 
-\paragraph{Proof of \cref{prop:special}.}
+\paragraph{Proof of the special cases (\cref{sec:field}).}
 With $\lambda=0$ the system is diagonal: $(n_k + s\alpha)d_k = n_k e_k$. With $\alpha = 0$ and $L_T$ the normalised Laplacian of the complete graph, $L_T = \frac{K}{K-1}(I - \frac{1}{K}\mathbf{1}\mathbf{1}^{\top})$, whose null space is spanned by $\mathbf{1}$. As $\lambda\to\infty$ the minimiser of $\frac12\sum_k n_k(d_k-e_k)^2 + \frac{\lambda s}{2}d^{\top}L_Td$ is forced into the null space, $d = \delta\mathbf{1}$, and minimising over $\delta$ gives $\delta = \sum_k n_k e_k/\sum_k n_k$. \qed
 
-\paragraph{Proof of \cref{prop:absent}.}
+\paragraph{Proof of the harmonic-extension property (\cref{sec:field}).}
 Partition the system by $A$ and $P$. Rows in $A$ have $n_k = 0$ and $e_k = 0$, so they read $s\,(Q_{\lambda,AA}d_A + Q_{\lambda,AP}d_P) = 0$, which gives the harmonic extension $d_A = -Q_{\lambda,AA}^{-1}Q_{\lambda,AP}d_P$ ($Q_{\lambda,AA}$ is positive definite when $\alpha>0$, or when every component of $A$ touches $P$). Substituting into the $P$ rows gives $(N_{z,P} + s(Q_{\lambda,PP} - Q_{\lambda,PA}Q_{\lambda,AA}^{-1}Q_{\lambda,AP}))d_P = N_{z,P}e_P$, which is \cref{eq:dsolve} on $P$ with the Schur complement $Q_\lambda/Q_{\lambda,AA}$, the Kron reduction of the graph onto $P$~\cite{dorfler2013kron}. \qed
 
-\paragraph{Proof of \cref{prop:variance}.}
+\paragraph{Proof of the posterior-variance bound (\cref{sec:field}).}
 Given $z$, the per-dimension posterior of $d$ is Gaussian with precision $(N_z + sQ_\lambda)/(\kappa\sigma_j^2)$, so its covariance is $\kappa\sigma_j^2(N_z + sQ_\lambda)^{-1}$. For symmetric positive definite $A$ and positive semi-definite $B$, $(A+B)^{-1}\preceq A^{-1}$, hence the diagonal entries satisfy $[(N_z + s\alpha I + s\lambda L_T)^{-1}]_{kk}\le [(N_z + s\alpha I)^{-1}]_{kk} = 1/(n_k + s\alpha)$. Strictness: $[(A+B)^{-1}]_{kk} = [A^{-1}]_{kk}$ for all $k$ in a set $C$ would require $B$ to vanish on the corresponding block of the Woodbury expansion, which fails for any class $k$ with $(L_T)_{kk}>0$, that is, any class with at least one neighbour. \qed
 
-\paragraph{Proof of \cref{prop:monotone}.}
+\paragraph{Proof of monotone block updates (\cref{sec:inference}).}
 With $\lambda_L = 0$ the objective is, in $z$, a sum of $N$ strictly convex functions on the simplex whose minimisers are the softmax in \cref{eq:estep} (standard mean-field argument), in $\pi$ a Dirichlet-regularised multinomial likelihood whose minimiser is \cref{eq:pi}, in $D$ a strictly convex quadratic (above) and in $\sigma^2$ a separable problem whose stationary point is the stated variance. Each block update therefore does not increase $J$, which is bounded below, so $J$ converges. With $\lambda_L>0$ the term $-\frac{\lambda_L}{2m_s}z^{\top}W_s z$ is handled by the linear bound $-z^{\top}W_s z\le -2 z^{\top}W_s z^{(t)} + z^{(t)\top}W_s z^{(t)}$, valid when $W_s$ is positive semi-definite and used as a majoriser otherwise, as in~\cite{ziko2020laplacianshot,zanella2024transclip}. \qed
 
 \section{Batch and online algorithms}
@@ -52,6 +52,12 @@ With $\lambda_L = 0$ the objective is, in $z$, a sum of $N$ strictly convex func
 \end{algorithm}
 
 \section{Empirical Bayes details}
+Given the responsibilities, the empirical displacements of the present classes $P=\{k: n_k\ge 1\}$ are, under the model, $e_P = d_P + \epsilon$ with $\epsilon_k\sim\mathcal{N}(0,\kappa\sigma^2/n_k)$ and $d_P\sim\mathcal{N}(0,\tilde{Q}_P^{-1})$, where $\tilde{Q}_P$ is the Schur complement of $Q$ onto $P$. With the isotropic approximation $\sigma_j^2\approx\bar\sigma^2$, the marginal likelihood of $E_P$ is a Gaussian with covariance $C=\kappa\bar\sigma^2(\tilde{Q}_P^{-1}+N_{z,P}^{-1})$ per dimension,
+\begin{equation}
+  \log p(E_P\,|\,\alpha,\lambda) = -\tfrac{1}{2}\tr\big(E_P^{\top}C^{-1}E_P\big) - \tfrac{d}{2}\log\det C + \mathrm{const},
+  \label{eq:evidence}
+\end{equation}
+which is maximised over the grid $\alpha\in\{0.25,\dots,8\}$, $\lambda\in\{0,1,\dots,32\}$.
 With $P$ the present classes, the marginal covariance of $e_{:j,P}$ in pseudo-count units is $\tilde{Q}_P^{-1} + N_{z,P}^{-1}$ where $\tilde{Q}_P$ is the Schur complement of $Q_\lambda$ onto $P$, because marginalising a GMRF onto a subset of nodes replaces the precision by its Schur complement~\cite{rue2005gmrf}. The evidence of \cref{eq:evidence} sums the $d$ independent dimensions after whitening $E$ by $\sqrt{\kappa\bar\sigma^2}$. One Cholesky factorisation of a $|P|\times|P|$ matrix per grid point suffices; the Schur complement requires one solve with $Q_{\lambda,AA}$, which is sparse and well conditioned when $\alpha>0$. The rule is disabled when $|P|<3$, since the evidence is then nearly flat in $\lambda$.
 
 \section{Datasets and protocol details}
