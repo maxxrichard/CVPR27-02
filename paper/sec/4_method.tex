@@ -3,12 +3,11 @@
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{figures/fig1_framework.pdf}
-  \caption{Overview of \method. Frozen encoders give features $X$ and anchors $T$ (grey: frozen or inherited; orange: this work). The anchors define the zero-shot prior $\hat{y}$ and the class graph $L_T$. Closed-form block updates alternate the E-step over $z$ with M-steps for the presence $\pi$, the graph-pooled displacement field $D$ and the shared covariance; $\mu = T + D$ are the adapted prototypes and $z$ the prediction.}
+  \includegraphics[width=\textwidth]{figures/architecture/architecture.png}
+  \caption{Overview of \method. Frozen encoders give features $X$ and anchors $T$. The anchors define the zero-shot prior $\hat{y}$ and the class graph $L_T$. Closed-form block updates alternate the E-step over $z$ with M-steps for the presence $\pi$, the graph-pooled displacement field $D$ and the shared covariance; $\mu = T + D$ are the adapted prototypes and $z$ the prediction.}
   \label{fig:framework}
 \end{figure*}
 
-\subsection{Framework overview}
 \method keeps the generative view of transduction~\cite{zanella2024transclip,zanella2025stata} but changes the object that is adapted: instead of $K$ independent prototypes it estimates a \emph{displacement field} $D\in\R^{K\times d}$ anchored at the text embeddings, $\mu_k = t_k + d_k$, with a prior that couples semantically related classes, together with the class proportions $\pi\in\Delta^K$ and a covariance shared by all classes. \Cref{fig:framework} shows the data flow: frozen encoders, the inherited sample graph $W_s$, the new class graph $L_T$, and a block-coordinate inference whose every step is closed form.
 
 \subsection{Graph-regularized displacement field}
@@ -37,7 +36,7 @@ with $\bar{\sigma}^2 = \tfrac{1}{d}\sum_j\sigma_j^2$. The term $\alpha I_K$ pull
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/fig2_module.pdf}
-  \caption{Graph-pooled displacement field on a toy class graph (node size: $n_k$). (a) Empirical displacements. (b) Independent shrinkage ($\lambda=0$) leaves absent classes at their anchors. (c) \cref{eq:dsolve} transfers displacements along the graph (\cref{prop:absent}).}
+  \caption{Graph-pooled displacement field on a toy class graph (node size: $n_k$). (a) Empirical displacements. (b) Independent shrinkage ($\lambda=0$) leaves absent classes at their anchors. (c) \cref{eq:dsolve} transfers displacements along the graph.}
   \label{fig:module}
 \end{figure}
 

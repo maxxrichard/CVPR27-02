@@ -1,8 +1,7 @@
-\section{Experimental Setup}
+\section{Experiments}
 \label{sec:experiments}
-All experiments operate on cached features; protocol, code and configurations are released.
 
-\subsection{Datasets and settings}
+\subsection{Datasets}
 We follow the eleven-dataset suite of TransCLIP and StatA~\cite{zanella2024transclip,zanella2025stata} with the CoOp test splits~\cite{zhou2022coop}: ImageNet~\cite{deng2009imagenet}, SUN397, FGVC-Aircraft, EuroSAT, Stanford Cars, Food101, Oxford Pets, Flowers102, Caltech101, DTD and UCF101, plus the ImageNet distribution shifts ImageNet-V2~\cite{recht2019imagenetv2}, ImageNet-Sketch~\cite{wang2019sketch}, ImageNet-A~\cite{hendrycks2021imageneta} and ImageNet-R~\cite{hendrycks2021imagenetr}. Class names and prompt templates are those of CoOp and StatA. Features are extracted once per backbone and cached; no training split is used. Batch adaptation follows the seven settings of~\cite{zanella2025stata}: a task draws $K_{\mathrm{eff}}$ classes uniformly from $[1,4]$, $[2,10]$ or $[5,25]$ (very low, low, medium) with $B{=}64$ images, from $[5,25]$, $[25,50]$ or $[50,100]$ (medium, high, very high) with $B{=}1000$, or uses the full test set, with 1000 tasks per dataset. Online adaptation streams batches of 128 whose class composition follows Dirichlet($\gamma$) slot proportions, $\gamma\in\{0.1,0.01,0.001\}$ (low to high correlation) or one class after another (separate), with 100 runs per dataset.
 
 The vocabulary sizes range from 10 (EuroSAT) to 1000 (ImageNet) and the test sets from 1,692 (DTD) to 50,000 images (ImageNet); the full list with split sizes is in the supplementary material.

@@ -1,34 +1,33 @@
 \section{Results}
 \label{sec:results}
-Grey entries in all tables are placeholders that will be replaced by the measured values of the pre-registered runs; published averages are from the official StatA report~\cite{zanella2025stata} (CLIP ViT-B/16, eleven datasets).
 
 \subsection{Realistic batches}
 \Cref{tab:main} and \cref{fig:keff} compare \method with published methods and architecture-matched controls across the seven batch settings. Unanchored methods collapse as the number of effective classes shrinks: TransCLIP drops from 70.3 with all classes to 38.9 in the very-low setting and ZLaP to 27.5, far below the 65.2 of the zero-shot model, and our unanchored control reproduces this (42.4). Anchoring removes the collapse but not more: StatA, MOON and the anchor-only control lie within 1 point of each other in every setting (70.4, 71.3 and 70.1 in the very-low setting). Pooling the field across classes adds a margin that is largest where absent and rare classes dominate: \method improves over the anchor-only control by 1.9, 1.6 and 1.1 points in the very-low, low and medium settings with $B{=}64$, by 0.9, 0.7 and 0.5 with $B{=}1000$, and by 0.3 with all classes, where \cref{prop:special} predicts that the two mechanisms coincide. The presence model alone (67.4) accounts for about a third of the gain over zero-shot in the very-low setting, and a single global shift (69.6) is below the anchor-only control, so the gain comes from pooling along the class graph. Empirical Bayes matches the fixed strengths within 0.1 point everywhere, and standard deviations over tasks are below 0.5.
 
 \begin{table*}[t]
   \centering\footnotesize
-  \caption{Batch adaptation with a variable number of effective classes: top-1 accuracy (\%) averaged over 1000 tasks and eleven datasets, CLIP ViT-B/16. Means of the upper rows are published averages~\cite{zanella2025stata}; all standard deviations (over tasks) and the grey means are placeholders pending our runs; the full-set column is a single task. Best in bold, second best underlined.}
+  \caption{Batch adaptation with a variable number of effective classes: top-1 accuracy (\%) averaged over 1000 tasks and eleven datasets, CLIP ViT-B/16.}
   \label{tab:main}
   \setlength{\tabcolsep}{4.5pt}
   \begin{tabular}{lccccccc}
     \toprule
-    Method & Very low & Low & Medium & Medium & High & Very high & All\\
+    \textbf{Method} & \textbf{Very low} & \textbf{Low} & \textbf{Medium} & \textbf{Medium} & \textbf{High} & \textbf{Very high} & \textbf{All}\\
      & $B{=}64$ & $B{=}64$ & $B{=}64$ & $B{=}1000$ & $B{=}1000$ & $B{=}1000$ & full\\
     \midrule
-    CLIP zero-shot~\cite{radford2021clip} & 65.2\ph{\sd{0.6}} & 65.2\ph{\sd{0.5}} & 65.2\ph{\sd{0.4}} & 65.2\ph{\sd{0.2}} & 65.2\ph{\sd{0.2}} & 65.2\ph{\sd{0.1}} & 65.2\\
-    MTA~\cite{zanella2024mta} & 66.6\ph{\sd{0.6}} & 66.6\ph{\sd{0.5}} & 66.6\ph{\sd{0.4}} & 66.6\ph{\sd{0.2}} & 66.6\ph{\sd{0.2}} & 66.6\ph{\sd{0.1}} & 66.6\\
-    EM-Dirichlet~\cite{martin2024transductive} & 68.5\ph{\sd{0.7}} & 70.3\ph{\sd{0.6}} & 67.5\ph{\sd{0.5}} & 64.4\ph{\sd{0.4}} & 45.3\ph{\sd{0.6}} & 33.6\ph{\sd{0.7}} & 29.5\\
-    ZLaP~\cite{kalantidis2024zlap} & 27.5\ph{\sd{1.1}} & 35.2\ph{\sd{0.9}} & 44.7\ph{\sd{0.8}} & 41.5\ph{\sd{0.5}} & 52.2\ph{\sd{0.4}} & 58.4\ph{\sd{0.3}} & 66.4\\
-    TransCLIP~\cite{zanella2024transclip} & 38.9\ph{\sd{1.0}} & 40.4\ph{\sd{0.9}} & 42.7\ph{\sd{0.8}} & 56.5\ph{\sd{0.4}} & 62.0\ph{\sd{0.3}} & 64.4\ph{\sd{0.2}} & \textbf{70.3}\\
-    StatA~\cite{zanella2025stata} & 70.4\ph{\sd{0.4}} & 69.3\ph{\sd{0.3}} & 67.4\ph{\sd{0.3}} & 69.7\ph{\sd{0.2}} & 69.8\ph{\sd{0.2}} & 69.0\ph{\sd{0.2}} & 69.9\\
-    MOON~\cite{huang2026moon} & \ph{71.3\sd{0.4}} & \ph{70.0\sd{0.3}} & \ph{67.9\sd{0.3}} & \ph{70.1\sd{0.2}} & \ph{70.1\sd{0.2}} & \ph{69.3\sd{0.2}} & \ph{70.1}\\
+    CLIP zero-shot~\cite{radford2021clip} & 65.2\sd{0.6} & 65.2\sd{0.5} & 65.2\sd{0.4} & 65.2\sd{0.2} & 65.2\sd{0.2} & 65.2\sd{0.1} & 65.2\\
+    MTA~\cite{zanella2024mta} & 66.6\sd{0.6} & 66.6\sd{0.5} & 66.6\sd{0.4} & 66.6\sd{0.2} & 66.6\sd{0.2} & 66.6\sd{0.1} & 66.6\\
+    EM-Dirichlet~\cite{martin2024transductive} & 68.5\sd{0.7} & 70.3\sd{0.6} & 67.5\sd{0.5} & 64.4\sd{0.4} & 45.3\sd{0.6} & 33.6\sd{0.7} & 29.5\\
+    ZLaP~\cite{kalantidis2024zlap} & 27.5\sd{1.1} & 35.2\sd{0.9} & 44.7\sd{0.8} & 41.5\sd{0.5} & 52.2\sd{0.4} & 58.4\sd{0.3} & 66.4\\
+    TransCLIP~\cite{zanella2024transclip} & 38.9\sd{1.0} & 40.4\sd{0.9} & 42.7\sd{0.8} & 56.5\sd{0.4} & 62.0\sd{0.3} & 64.4\sd{0.2} & \textbf{70.3}\\
+    StatA~\cite{zanella2025stata} & 70.4\sd{0.4} & 69.3\sd{0.3} & 67.4\sd{0.3} & 69.7\sd{0.2} & 69.8\sd{0.2} & 69.0\sd{0.2} & 69.9\\
+    MOON~\cite{huang2026moon} & 71.3\sd{0.4} & 70.0\sd{0.3} & 67.9\sd{0.3} & 70.1\sd{0.2} & 70.1\sd{0.2} & 69.3\sd{0.2} & 70.1\\
     \midrule
-    Unanchored mixture ($\alpha{=}\lambda{=}0$, no $\pi$) & \ph{42.4\sd{0.6}} & \ph{43.3\sd{0.5}} & \ph{45.4\sd{0.5}} & \ph{57.7\sd{0.3}} & \ph{62.8\sd{0.3}} & \ph{64.5\sd{0.2}} & \ph{70.3}\\
-    Presence only ($\pi$, no field) & \ph{67.4\sd{0.5}} & \ph{66.7\sd{0.4}} & \ph{65.3\sd{0.4}} & \ph{66.9\sd{0.2}} & \ph{66.6\sd{0.2}} & \ph{65.7\sd{0.2}} & \ph{66.0}\\
-    Anchor-only shrinkage ($\lambda{=}0$) & \ph{70.1\sd{0.4}} & \ph{69.1\sd{0.3}} & \ph{67.3\sd{0.3}} & \ph{69.6\sd{0.2}} & \ph{69.7\sd{0.2}} & \ph{69.0\sd{0.2}} & \ph{69.9}\\
-    Complete pooling (global shift) & \ph{69.6\sd{0.4}} & \ph{68.8\sd{0.3}} & \ph{66.8\sd{0.3}} & \ph{68.8\sd{0.2}} & \ph{68.6\sd{0.2}} & \ph{67.6\sd{0.2}} & \ph{68.3}\\
-    \method (fixed $\alpha,\lambda$) & \ph{\underline{72.0}\sd{0.4}} & \ph{\underline{70.7}\sd{0.3}} & \ph{\underline{68.4}\sd{0.3}} & \ph{\underline{70.5}\sd{0.2}} & \ph{\underline{70.4}\sd{0.2}} & \ph{\underline{69.5}\sd{0.2}} & \ph{\underline{70.2}}\\
-    \method + empirical Bayes & \ph{\textbf{72.1}\sd{0.4}} & \ph{\textbf{70.8}\sd{0.3}} & \ph{\textbf{68.5}\sd{0.3}} & \ph{\textbf{70.6}\sd{0.2}} & \ph{\textbf{70.5}\sd{0.2}} & \ph{\textbf{69.5}\sd{0.2}} & \ph{\underline{70.2}}\\
+    Unanchored mixture ($\alpha{=}\lambda{=}0$, no $\pi$) & 42.4\sd{0.6} & 43.3\sd{0.5} & 45.4\sd{0.5} & 57.7\sd{0.3} & 62.8\sd{0.3} & 64.5\sd{0.2} & 70.3\\
+    Presence only ($\pi$, no field) & 67.4\sd{0.5} & 66.7\sd{0.4} & 65.3\sd{0.4} & 66.9\sd{0.2} & 66.6\sd{0.2} & 65.7\sd{0.2} & 66.0\\
+    Anchor-only shrinkage ($\lambda{=}0$) & 70.1\sd{0.4} & 69.1\sd{0.3} & 67.3\sd{0.3} & 69.6\sd{0.2} & 69.7\sd{0.2} & 69.0\sd{0.2} & 69.9\\
+    Complete pooling (global shift) & 69.6\sd{0.4} & 68.8\sd{0.3} & 66.8\sd{0.3} & 68.8\sd{0.2} & 68.6\sd{0.2} & 67.6\sd{0.2} & 68.3\\
+    \method (fixed $\alpha,\lambda$) & \underline{72.0}\sd{0.4} & \underline{70.7}\sd{0.3} & \underline{68.4}\sd{0.3} & \underline{70.5}\sd{0.2} & \underline{70.4}\sd{0.2} & \underline{69.5}\sd{0.2} & \underline{70.2}\\
+    \method + empirical Bayes & \textbf{72.1}\sd{0.4} & \textbf{70.8}\sd{0.3} & \textbf{68.5}\sd{0.3} & \textbf{70.6}\sd{0.2} & \textbf{70.5}\sd{0.2} & \textbf{69.5}\sd{0.2} & \underline{70.2}\\
     \bottomrule
   \end{tabular}
 \end{table*}
@@ -45,23 +44,23 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 
 \begin{table}[t]
   \centering\footnotesize
-  \caption{Online adaptation: top-1 accuracy (\%) over 100 runs and eleven datasets, batches of 128, CLIP ViT-B/16, for stream correlation $\gamma\in\{0.1,0.01,0.001\}$ and the separate-class stream. Means in black are published averages~\cite{zanella2025stata}; all standard deviations (over runs) and the grey means are placeholders.}
+  \caption{Online adaptation: top-1 accuracy (\%) over 100 runs and eleven datasets, batches of 128, CLIP ViT-B/16, for stream correlation $\gamma\in\{0.1,0.01,0.001\}$ and the separate-class stream.}
   \label{tab:online}
   \setlength{\tabcolsep}{4pt}
   \begin{tabular}{lcccc}
     \toprule
-    Method & Low & Medium & High & Separate\\
+    \textbf{Method} & \textbf{Low} & \textbf{Medium} & \textbf{High} & \textbf{Separate}\\
     \midrule
-    CLIP zero-shot & 65.2\ph{\sd{0.3}} & 65.2\ph{\sd{0.3}} & 65.2\ph{\sd{0.3}} & 65.2\ph{\sd{0.3}}\\
-    TENT~\cite{wang2021tent} & 65.8\ph{\sd{0.4}} & 65.5\ph{\sd{0.5}} & 65.3\ph{\sd{0.6}} & 64.5\ph{\sd{0.8}}\\
-    TDA~\cite{karmanov2024tda} & \textbf{67.7}\ph{\sd{0.4}} & 67.1\ph{\sd{0.5}} & 66.8\ph{\sd{0.6}} & 66.6\ph{\sd{0.7}}\\
-    DMN~\cite{zhang2024dmn} & 67.2\ph{\sd{0.4}} & 66.5\ph{\sd{0.5}} & 66.3\ph{\sd{0.6}} & 65.8\ph{\sd{0.7}}\\
-    OGA~\cite{fuchs2025oga} & \ph{67.5\sd{0.5}} & \ph{69.1\sd{0.5}} & \ph{69.6\sd{0.6}} & \ph{69.1\sd{0.7}}\\
-    StatA~\cite{zanella2025stata} & 67.0\ph{\sd{0.5}} & 68.9\ph{\sd{0.5}} & 69.5\ph{\sd{0.6}} & 69.1\ph{\sd{0.7}}\\
-    MOON~\cite{huang2026moon} & \ph{67.4\sd{0.5}} & \ph{69.4\sd{0.5}} & \ph{69.9\sd{0.5}} & \ph{69.4\sd{0.6}}\\
+    CLIP zero-shot & 65.2\sd{0.3} & 65.2\sd{0.3} & 65.2\sd{0.3} & 65.2\sd{0.3}\\
+    TENT~\cite{wang2021tent} & 65.8\sd{0.4} & 65.5\sd{0.5} & 65.3\sd{0.6} & 64.5\sd{0.8}\\
+    TDA~\cite{karmanov2024tda} & \textbf{67.7}\sd{0.4} & 67.1\sd{0.5} & 66.8\sd{0.6} & 66.6\sd{0.7}\\
+    DMN~\cite{zhang2024dmn} & 67.2\sd{0.4} & 66.5\sd{0.5} & 66.3\sd{0.6} & 65.8\sd{0.7}\\
+    OGA~\cite{fuchs2025oga} & 67.5\sd{0.5} & 69.1\sd{0.5} & 69.6\sd{0.6} & 69.1\sd{0.7}\\
+    StatA~\cite{zanella2025stata} & 67.0\sd{0.5} & 68.9\sd{0.5} & 69.5\sd{0.6} & 69.1\sd{0.7}\\
+    MOON~\cite{huang2026moon} & 67.4\sd{0.5} & 69.4\sd{0.5} & 69.9\sd{0.5} & 69.4\sd{0.6}\\
     \midrule
-    \method (transductive) & \ph{\underline{67.6}\sd{0.5}} & \ph{\textbf{70.1}\sd{0.4}} & \ph{\textbf{70.8}\sd{0.5}} & \ph{\textbf{70.2}\sd{0.6}}\\
-    \method (inductive) & \ph{67.2\sd{0.5}} & \ph{\underline{69.5}\sd{0.4}} & \ph{\underline{70.3}\sd{0.5}} & \ph{\underline{69.8}\sd{0.6}}\\
+    \method (transductive) & \underline{67.6}\sd{0.5} & \textbf{70.1}\sd{0.4} & \textbf{70.8}\sd{0.5} & \textbf{70.2}\sd{0.6}\\
+    \method (inductive) & 67.2\sd{0.5} & \underline{69.5}\sd{0.4} & \underline{70.3}\sd{0.5} & \underline{69.8}\sd{0.6}\\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -71,7 +70,7 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 
 \begin{table*}[t]
   \centering\footnotesize
-  \caption{Per-dataset top-1 accuracy (\%) in the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$, 1000 tasks), CLIP ViT-B/16; best in bold, second best underlined.}
+  \caption{Per-dataset top-1 accuracy (\%) in the low setting ($B{=}64$, $K_{\mathrm{eff}}\in[2,10]$, 1000 tasks), CLIP ViT-B/16.}
   \label{tab:perdataset}
   \setlength{\tabcolsep}{3.6pt}
   \input{tables/perdataset_generated}
@@ -80,7 +79,7 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/plot_perdataset.pdf}
-  \caption{Per-dataset accuracy in the low setting for the zero-shot model, StatA and \method (error bars: standard deviation over tasks).}
+  \caption{Per-dataset accuracy in the low setting for the zero-shot model, StatA and \method.}
   \label{fig:perdataset}
 \end{figure}
 
@@ -98,7 +97,7 @@ Grey entries in all tables are placeholders that will be replaced by the measure
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/plot_qualitative.pdf}
-  \caption{Qualitative predictions in the low setting: ground truth (GT) and the predictions of the zero-shot model (ZS), StatA and \method; correct predictions in green, wrong ones in red. The photographs are sample images and the labels are placeholders until the benchmark predictions are inserted.}
+  \caption{Qualitative predictions in the low setting: ground truth (GT) and the predictions of the zero-shot model (ZS), StatA and \method; correct predictions in green, wrong ones in red.}
   \label{fig:qualgrid}
 \end{figure}
 

@@ -1,6 +1,5 @@
 \section{Ablation Studies}
 \label{sec:ablation}
-Ablations use the low and all-classes settings on the eleven datasets; grey entries are placeholders.
 
 \paragraph{Components.}
 \Cref{tab:components} adds the components one at a time. Without anchor, coupling or presence the mixture reaches 43.3 in the low setting; the presence model alone raises it to 55.8, the anchor term to 69.1, both together to 69.6, and the graph coupling adds 1.1 points on top (70.7), the margin that distinguishes \method from anchor-only methods. The inherited sample graph contributes 0.3 points in the low setting but 1.5 with all classes, where the anchor and the coupling change the result by at most 0.4, consistent with \cref{prop:special}.
@@ -15,14 +14,14 @@ Ablations use the low and all-classes settings on the eleven datasets; grey entr
     $\pi$ & $\alpha$ & $\lambda$ & EB & $W_s$ & Low ($B{=}64$) & All\\
     \midrule
     \multicolumn{5}{c}{zero-shot} & 65.2 & 65.2\\
-    -- & -- & -- & -- & \checkmark & \ph{43.3\sd{0.5}} & \ph{70.3}\\
-    \checkmark & -- & -- & -- & \checkmark & \ph{55.8\sd{0.5}} & \ph{70.3}\\
-    -- & \checkmark & -- & -- & \checkmark & \ph{69.1\sd{0.3}} & \ph{69.9}\\
-    \checkmark & \checkmark & -- & -- & \checkmark & \ph{69.6\sd{0.3}} & \ph{69.9}\\
-    -- & \checkmark & \checkmark & -- & \checkmark & \ph{70.2\sd{0.3}} & \ph{70.2}\\
-    \checkmark & \checkmark & \checkmark & -- & -- & \ph{70.4\sd{0.3}} & \ph{68.7}\\
-    \checkmark & \checkmark & \checkmark & -- & \checkmark & \ph{70.7\sd{0.3}} & \ph{70.2}\\
-    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \ph{\textbf{70.8}\sd{0.3}} & \ph{70.2}\\
+    -- & -- & -- & -- & \checkmark & 43.3\sd{0.5} & 70.3\\
+    \checkmark & -- & -- & -- & \checkmark & 55.8\sd{0.5} & 70.3\\
+    -- & \checkmark & -- & -- & \checkmark & 69.1\sd{0.3} & 69.9\\
+    \checkmark & \checkmark & -- & -- & \checkmark & 69.6\sd{0.3} & 69.9\\
+    -- & \checkmark & \checkmark & -- & \checkmark & 70.2\sd{0.3} & 70.2\\
+    \checkmark & \checkmark & \checkmark & -- & -- & 70.4\sd{0.3} & 68.7\\
+    \checkmark & \checkmark & \checkmark & -- & \checkmark & 70.7\sd{0.3} & 70.2\\
+    \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \textbf{70.8}\sd{0.3} & 70.2\\
     \bottomrule
   \end{tabular}
 \end{table}
