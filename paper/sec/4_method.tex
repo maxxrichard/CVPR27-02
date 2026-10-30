@@ -3,7 +3,7 @@
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\textwidth]{figures/architecture/architecture.png}
+  \includegraphics[width=0.9\textwidth]{figures/architecture/architecture.png}
   \caption{Overview of \method. Frozen encoders give features $X$ and anchors $T$. The anchors define the zero-shot prior $\hat{y}$ and the class graph $L_T$, the features define the sample graph $W_s$. Closed-form block updates alternate the E-step over $z$ with M-steps for the presence $\pi$, the graph-pooled displacement field $D$ and the shared covariance; $\mu = T + D$ are the adapted prototypes and $z$ the prediction.}
   \label{fig:framework}
 \end{figure*}
@@ -48,7 +48,7 @@ Writing $N_z=\diag(n_1,\dots,n_K)$ with $n_k=\sum_i z_{ik}$, $\bar{x}_k = \sum_i
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=\linewidth]{figures/fig2_module.pdf}
+  \includegraphics[width=0.9\linewidth]{figures/fig2_module.pdf}
   \caption{Graph-pooled displacement field on a toy class graph (node size: $n_k$). (a) Empirical displacements. (b) Independent shrinkage ($\lambda=0$) leaves absent classes at their anchors. (c) \cref{eq:dsolve} transfers displacements along the graph.}
   \label{fig:module}
 \end{figure}

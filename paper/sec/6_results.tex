@@ -34,7 +34,7 @@
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/plot_keff.pdf}
+  \includegraphics[width=0.8\linewidth]{figures/plot_keff.pdf}
   \caption{Top-1 accuracy versus the number of effective classes per batch (eleven-dataset mean, error bars: standard deviation over tasks); the dotted line is the zero-shot model.}
   \label{fig:keff}
 \end{figure}
@@ -78,26 +78,28 @@
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.76\linewidth]{figures/plot_perdataset.pdf}
+  \includegraphics[width=0.85\linewidth]{figures/plot_perdataset.pdf}
   \caption{Per-dataset accuracy in the low setting for the zero-shot model, StatA and \method.}
   \label{fig:perdataset}
 \end{figure}
 
+
 \begin{figure}[t]
-  \begin{minipage}[t]{0.56\linewidth}
-    \centering\scriptsize
-    \captionof{table}{ImageNet (IN) and its shifts V2, Sketch (S), A and R in the low setting, top-1 accuracy (\%), CLIP ViT-B/16.}
-    \label{tab:shift}
-    \setlength{\tabcolsep}{2pt}
-    \input{tables/shift_generated}
-  \end{minipage}\hfill
-  \begin{minipage}[t]{0.42\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{figures/plot_absentmass.pdf}
-    \caption{Posterior mass assigned to classes absent from the batch versus the number of effective classes (ImageNet, $B{=}64$).}
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/plot_absentmass.pdf}
+  \caption{Posterior mass assigned to classes absent from the batch versus the number of effective classes (ImageNet, $B{=}64$).}
     \label{fig:absent}
-  \end{minipage}
 \end{figure}
+
+\begin{table}[t]
+  \centering\footnotesize
+  \caption{ImageNet (IN) and its shifts V2, Sketch (S), A and R in the low setting, top-1 accuracy (\%), CLIP ViT-B/16.}
+  \label{tab:shift}
+  \setlength{\tabcolsep}{3.6pt}
+  \input{tables/shift_generated}
+\end{table}
+
+
 
 
 
@@ -107,7 +109,7 @@
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/plot_qualitative.pdf}
+  \includegraphics[width=0.9\linewidth]{figures/plot_qualitative.pdf}
   \caption{Qualitative predictions in the low setting: ground truth (GT) and the predictions of the zero-shot model (ZS), StatA and \method; correct predictions in green, wrong ones in red.}
   \label{fig:qualgrid}
 \end{figure}
